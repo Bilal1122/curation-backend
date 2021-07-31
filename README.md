@@ -1,1 +1,1 @@
-# curation-backend
+# curation_portal_api

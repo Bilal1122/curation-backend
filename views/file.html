@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+    />
+    <title>Upload File</title>
+    <style>
+      body {
+        background: rgb(34, 34, 34);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100vw;
+        height: 100vh;
+      }
+    </style>
+  </head>
+  <body>
+    <form
+      style="
+        margin-bottom: 50px;
+        border: 1px solid black;
+        background-color: rgb(255, 255, 255);
+        border-radius: 5px;
+
+        width: 420px;
+        padding: 1rem;
+      "
+    >
+      <div
+        style="
+          position: relative;
+          background-color: rgb(238, 238, 238);
+          border: 1px dashed rgb(136, 136, 136);
+          height: 100px;
+          border-radius: 5px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          cursor: pointer;
+          margin-bottom: 10px;
+        "
+      >
+        <p style="font-size: 1rem;">Upload tab separated .txt file</p>
+        <input
+          id="file"
+          type="file"
+          style="
+            cursor: pointer;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+          "
+        />
+      </div>
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        "
+      >
+        <p class="file-name" style="font-size: 1rem;">No file Selected</p>
+        <button type="button" class="btn btn-primary" disabled="true">
+          Upload
+        </button>
+      </div>
+    </form>
+    <script>
+      let selected = null;
+      const uploadButton = document.querySelector(".btn");
+      const file = document.getElementById("file");
+      file.addEventListener("change", (e) => {
+        selected = e.target.files[0];
+        document.querySelector(".file-name").innerHTML = selected.name;
+        uploadButton.removeAttribute("disabled");
+      });
+
+      uploadButton.addEventListener("click", () => {
+        if (!selected) {
+          return alert("please select a file");
+        }
+        const formData = new FormData();
+        console.log(selected);
+        formData.append("availableTracks", selected);
+        const options = {
+          timeout: 50000,
+          method: "POST",
+          body: formData,
+          headers: {
+            Accept: "application/json",
+          },
+        };
+
+        fetch("http://localhost:5000/api/admin/availableTracks/", options)
+          .then((res) => res.json())
+          .then((res) => {
+            alert("file uploaded successfully");
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      });
+    </script>
+  </body>
+</html>
