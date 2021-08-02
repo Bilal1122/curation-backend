@@ -1,4 +1,4 @@
-const dev = false;
+const dev = true;
 const KEYS = {
   // others & common
   dev,
