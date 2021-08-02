@@ -107,7 +107,7 @@ app.get("/getReportData", async (req, res, next) => {
 });
 
 app.get("", (req, res) => {
-  res.json("Welcome to curation digital!");
+  res.json("Welcome to curation digital testers!");
 });
 
 // port & server
