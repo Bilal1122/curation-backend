@@ -5,62 +5,66 @@ const GROUP = new Schema(
   {
     name: {
       type: String,
-      required: true,
+      required: true
     },
     _publisher: {
       type: [Schema.Types.ObjectID],
       ref: "publisher",
-      required: true,
+      required: true
     },
     _labels: {
       type: [String],
-      required: true,
+      required: true
     },
     _PROs: {
       type: [String],
-      required: true,
+      required: true
     },
     _user: {
       type: [Schema.Types.ObjectID],
       ref: "user",
-      default: [],
+      default: []
     },
     pub_names: {
       type: [String],
-      default: [],
+      default: []
     },
     active: {
       type: Boolean,
-      default: true,
+      default: true
     },
     searchLimit: {
       type: Number,
-      default: 1000,
+      default: 1000
     },
     userLimit: {
       type: Number,
-      default: 1000,
+      default: 1000
     },
     batchSearchLimit: {
       type: Number,
-      default: 50,
+      default: 50
     },
     filterByLicencedPublishers: {
       type: Boolean,
-      default: false,
+      default: false
     },
     filterByLicencedLabels: {
       type: Boolean,
-      default: false,
+      default: false
     },
     filterByLicencedPROs: {
       type: Boolean,
-      default: false,
+      default: false
     },
     groupEmail: {
       type: String,
-      trim: true,
+      trim: true
     },
+    manualSearchReports: {
+      type: Boolean,
+      default: false
+    }
   },
   { timestamps: true }
 );
