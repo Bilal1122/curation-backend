@@ -265,7 +265,8 @@ router.put('/', async (req, res) => {
     _PROs,
     filterByLicencedPublishers,
     filterByLicencedLabels,
-    filterByLicencedPROs
+    filterByLicencedPROs,
+    manualSearchReports
   } = req.body;
 
 
@@ -304,7 +305,8 @@ router.put('/', async (req, res) => {
             filterByLicencedPublishers: filterByLicencedPublishers,
             filterByLicencedLabels: filterByLicencedLabels,
             filterByLicencedPROs: filterByLicencedPROs,
-            groupEmail
+            groupEmail,
+            manualSearchReports
           },
           {new: true}
         ).catch((err) => {
