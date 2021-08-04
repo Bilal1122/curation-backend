@@ -1,6 +1,7 @@
-const express = require('express');
-const Group = require('../../models/Group');
-const User = require('../../models/User');
+const express = require("express");
+const Group = require("../../models/Group");
+const User = require("../../models/User");
+const History = require("../../models/History");
 const router = express.Router();
 
 /**
@@ -24,33 +25,33 @@ const router = express.Router();
  *      400:
  *       description: failed
  */
-router.get('/getUsers', async (req, res) => {
+router.get("/getUsers", async (req, res) => {
   try {
     const skip = parseInt(req.query.skip);
     const limit = parseInt(req.query.limit);
 
     let users = await User.find({})
       .populate({
-        model: 'group',
-        path: '_group',
-        select: 'name'
+        model: "group",
+        path: "_group",
+        select: "name"
       })
       .skip(skip)
       .limit(limit)
-      .select('username verified blocked _group email');
+      .select("username verified blocked _group email");
 
     let totalUsers = await User.countDocuments({});
 
-    res.send({users, totalUsers});
+    res.send({ users, totalUsers });
   } catch (err) {
     res.status(500).send(err.message ? err.message : err);
   }
 });
 
-router.post('/getGroupByID', async (req, res) => {
-  let getGroup = await Group.findOne({_id: req.body._id})
-  res.json(getGroup)
-})
+router.post("/getGroupByID", async (req, res) => {
+  let getGroup = await Group.findOne({ _id: req.body._id });
+  res.json(getGroup);
+});
 
 /**
  * @swagger
@@ -73,13 +74,13 @@ router.post('/getGroupByID', async (req, res) => {
  *      400:
  *       description: failed
  */
-router.post('/toggleVerification', async (req, res) => {
+router.post("/toggleVerification", async (req, res) => {
   try {
-    const {_id} = req.body;
+    const { _id } = req.body;
 
     const user = await User.findById(_id);
     if (!user) {
-      return res.status(400).send({msg: 'User not found!'});
+      return res.status(400).send({ msg: "User not found!" });
     }
 
     const userUpdated = await User.findByIdAndUpdate(
@@ -91,7 +92,7 @@ router.post('/toggleVerification', async (req, res) => {
         new: true,
         useFindAndModify: true
       }
-    ).select('username verified blocked');
+    ).select("username verified blocked");
     res.send(userUpdated);
   } catch (err) {
     res.status(500).send(err.message ? err.message : err);
@@ -119,13 +120,13 @@ router.post('/toggleVerification', async (req, res) => {
  *      400:
  *       description: failed
  */
-router.post('/toggleBlockStatus', async (req, res) => {
+router.post("/toggleBlockStatus", async (req, res) => {
   try {
-    const {_id} = req.body;
+    const { _id } = req.body;
 
     const user = await User.findById(_id);
     if (!user) {
-      return res.status(400).send({msg: 'User not found!'});
+      return res.status(400).send({ msg: "User not found!" });
     }
 
     const userUpdated = await User.findByIdAndUpdate(
@@ -139,11 +140,11 @@ router.post('/toggleBlockStatus', async (req, res) => {
       }
     )
       .populate({
-        model: 'group',
-        path: '_group',
-        select: 'name'
+        model: "group",
+        path: "_group",
+        select: "name"
       })
-      .select('username verified blocked email _group');
+      .select("username verified blocked email _group");
 
     console.log(userUpdated);
 
@@ -174,31 +175,39 @@ router.post('/toggleBlockStatus', async (req, res) => {
  *      400:
  *       description: failed
  */
-router.get('/searchUser', async (req, res) => {
+router.get("/searchUser", async (req, res) => {
   try {
     const skip = parseInt(req.query.skip);
     const limit = parseInt(req.query.limit);
     const search_term = req.query.search_term;
 
-    let regex = new RegExp(`${search_term}`, 'ig');
+    let regex = new RegExp(`${search_term}`, "ig");
 
-    let resultantGroups = await Group.find({name: {$regex: regex}})
-    resultantGroups = resultantGroups.map(gr => gr._id)
-
+    let resultantGroups = await Group.find({ name: { $regex: regex } });
+    resultantGroups = resultantGroups.map((gr) => gr._id);
 
     const users = await User.find({
-      $or: [{username: {$regex: regex}}, {email: {$regex: regex}}, {_group: resultantGroups}]
-    }).populate({
-      model: 'group',
-      path: '_group',
-      select: 'name'
+      $or: [
+        { username: { $regex: regex } },
+        { email: { $regex: regex } },
+        { _group: resultantGroups }
+      ]
     })
+      .populate({
+        model: "group",
+        path: "_group",
+        select: "name"
+      })
       .skip(skip)
       .limit(limit);
     const totalUsers = await User.countDocuments({
-      $or: [{username: {$regex: regex}}, {email: {$regex: regex}}, {_group: resultantGroups}]
+      $or: [
+        { username: { $regex: regex } },
+        { email: { $regex: regex } },
+        { _group: resultantGroups }
+      ]
     });
-    res.send({users, totalUsers});
+    res.send({ users, totalUsers });
   } catch (err) {
     res.status(500).send(err.message ? err.message : err);
   }
@@ -225,20 +234,20 @@ router.get('/searchUser', async (req, res) => {
  *      400:
  *       description: failed
  */
-router.post('/getFiltersByLicenced', async (req, res) => {
+router.post("/getFiltersByLicenced", async (req, res) => {
   try {
-    const {_id} = req.body;
+    const { _id } = req.body;
 
     const user = await User.findById(_id)
       .populate({
-        model: 'group',
-        path: '_group'
+        model: "group",
+        path: "_group"
       })
       .select(
-        'filterByLicencedPublishers filterByLicencedLabels filterByLicencedPROs _group'
+        "filterByLicencedPublishers filterByLicencedLabels filterByLicencedPROs _group"
       );
     if (!user) {
-      return res.status(400).send({message: 'No User Availabe!'});
+      return res.status(400).send({ message: "No User Availabe!" });
     }
 
     res.send(user);
@@ -283,7 +292,7 @@ router.post('/getFiltersByLicenced', async (req, res) => {
  *      400:
  *       description: failed
  */
-router.patch('/changeValidationFilters', async (req, res) => {
+router.patch("/changeValidationFilters", async (req, res) => {
   try {
     const {
       _id,
@@ -294,7 +303,7 @@ router.patch('/changeValidationFilters', async (req, res) => {
 
     const user = await User.findById(_id);
     if (!user) {
-      return res.status(400).send({message: 'No user available!'});
+      return res.status(400).send({ message: "No user available!" });
     }
 
     const response = await User.findByIdAndUpdate(
@@ -308,8 +317,8 @@ router.patch('/changeValidationFilters', async (req, res) => {
         new: true
       }
     ).populate({
-      path: '_group',
-      model: 'group'
+      path: "_group",
+      model: "group"
     });
 
     res.send(response);
@@ -339,63 +348,111 @@ router.patch('/changeValidationFilters', async (req, res) => {
  *      400:
  *       description: failed
  */
-router.get('/getGroup/:_id', async (req, res) => {
+router.get("/getGroup/:_id", async (req, res) => {
   try {
-    const {_id} = req.params;
+    const { _id } = req.params;
     const user = await User.findById(_id);
     if (!user) {
-      return res.status(400).send({message: 'User not found!'});
+      return res.status(400).send({ message: "User not found!" });
     }
     const group = await Group.findById(user._group).select(
-      'filterByLicencedPublishers filterByLicencedLabels filterByLicencedPROs'
+      "filterByLicencedPublishers filterByLicencedLabels filterByLicencedPROs"
     );
     if (!group) {
-      return res.status(400).send({message: 'Group not found!'});
+      return res.status(400).send({ message: "Group not found!" });
     }
-    res.send({group});
+    res.send({ group });
   } catch (err) {
     res.status(500).send(err.message ? err.message : err);
   }
 });
 
-router.get('/:_id', async (req, res) => {
+router.get("/:_id", async (req, res) => {
   try {
-    let user = await User.findById(req.params._id)
-    res.send({user});
+    let user = await User.findById(req.params._id);
+    res.send({ user });
   } catch (err) {
     res.status(500).send(err.message ? err.message : err);
   }
 });
 
-router.put('/', async (req, res) => {
-  let {_id, userPreferences} = req.body;
+router.put("/", async (req, res) => {
+  let { _id, userPreferences } = req.body;
   try {
-    let user = await User.findOneAndUpdate({_id}, {
-      $set: {
-        filterByLicencedPublishers: userPreferences.filterByLicencedPublishers,
-        filterByLicencedLabels: userPreferences.filterByLicencedLabels,
-        filterByLicencedPROs: userPreferences.filterByLicencedPROs
-      }
-    }, {new:true})
-    res.send({user});
+    let user = await User.findOneAndUpdate(
+      { _id },
+      {
+        $set: {
+          filterByLicencedPublishers:
+            userPreferences.filterByLicencedPublishers,
+          filterByLicencedLabels: userPreferences.filterByLicencedLabels,
+          filterByLicencedPROs: userPreferences.filterByLicencedPROs
+        }
+      },
+      { new: true }
+    );
+    res.send({ user });
   } catch (err) {
     res.status(500).send(err.message ? err.message : err);
   }
 });
 
-router.put('/groupLimitReduce', async (req, res) => {
-  let {_id, value} = req.body;
-  console.log(_id, value, "--------------------------------")
+router.put("/groupLimitReduce", async (req, res) => {
+  let { _id, value } = req.body;
   try {
-    let updateGroup = await Group.findOneAndUpdate({_id}, {
-      $inc: {
-        searchLimit : -value
-      }
-    }, {new:true})
-    res.send({updateGroup});
+    let updateGroup = await Group.findOneAndUpdate(
+      { _id },
+      {
+        $inc: {
+          searchLimit: -value
+        }
+      },
+      { new: true }
+    );
+    res.send({ updateGroup });
   } catch (err) {
     res.status(500).send(err.message ? err.message : err);
   }
 });
+function throwErr(msg) {
+  throw new Error(msg);
+}
 
+router.post("/getManualReport", async (req, res) => {
+  let { _id } = req.body;
+  let current_date = new Date();
+  let yesterday = new Date(current_date.getTime() - 24 * 60 * 60 * 1000);
+  console.log(current_date);
+  console.log(yesterday);
+
+  try {
+    let getUser = await User.findOne({ _id })
+      .select("_group email")
+      .catch((err) => throwErr(err));
+
+    let getGroup = await Group.findById(getUser._group)
+      .select("manualSearchReports")
+      .catch((err) => throwErr(err));
+
+    if (!getGroup.manualSearchReports)
+      return res.json({
+        success: false,
+        message: "Feature not available for this group."
+      });
+
+    let getUserHistory = await History.find({
+      $and: [
+        {
+          email: getUser.email,
+          createdAt: { $gte: yesterday, $lte: current_date }
+        }
+      ]
+    })
+      // .limit(10)
+      .catch((err) => throwErr(err));
+    res.json({ success: true, data: getUserHistory });
+  } catch (err) {
+    res.status(500).send(err.message ? err.message : err);
+  }
+});
 module.exports = router;

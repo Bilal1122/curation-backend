@@ -8,7 +8,7 @@ const HISTORY = new Schema(
       required: true
     },
     _group:{
-      type:mongoose.Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref:"group",
       // default:"5ef25fe549b6220017d97bf3"
     },
@@ -33,4 +33,4 @@ const HISTORY = new Schema(
   {timestamps: true}
 );
 
-module.exports = User = mongoose.model('history', HISTORY);
+module.exports = Histories = mongoose.model('history', HISTORY);
