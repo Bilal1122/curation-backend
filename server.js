@@ -76,6 +76,14 @@ mongoose
     console.log(err);
   });
 
+
+// cross servers
+app.use(cors());
+// Body Parser
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
+
+
 // initiate swagger
 app.use("/api-docs", swagger.serve, swagger.setup(swaggerDocs));
 
@@ -84,12 +92,6 @@ app.use("/uploads/", express.static(path.join(__dirname, "uploads")));
 
 const { userAuthVerification } = require("./middleware/jwt");
 
-// cross servers
-app.use(cors());
-app.options("*", cors());
-// Body Parser
-app.use(bodyParser.json({ limit: "50mb" }));
-app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
 // api
 app.use("/api", require("./routes/router"));
