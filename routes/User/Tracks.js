@@ -349,7 +349,8 @@ router.post('/filterNew', async (req, res) => {
           email: userByAuth.email,
           _group: getUserGroupDetails._id,
           query: {
-            playlist_name: getPlaylistDetails.name
+            playlist_name: getPlaylistDetails.name,
+            ...userPreferences
           },
           _track: destructUnavailableTracks,
           success: false,

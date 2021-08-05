@@ -448,7 +448,7 @@ router.post("/getManualReport", async (req, res) => {
         }
       ]
     })
-      // .limit(10)
+      .sort({ createdAt: -1 })
       .catch((err) => throwErr(err));
     res.json({ success: true, data: getUserHistory });
   } catch (err) {
