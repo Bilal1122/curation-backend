@@ -79,6 +79,8 @@ mongoose
 
 // cross servers
 app.use(cors());
+app.options('*', cors()) // include before other routes
+
 // Body Parser
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
