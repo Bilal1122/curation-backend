@@ -1108,10 +1108,9 @@ router.post("/downloadReports", function _callee19(req, res) {
           tracksCount = {};
           tracks = [];
           myHistories.forEach(function (history) {
-            var filtersUsed = "";
-
             history._track.forEach(function (track) {
               var keys = [];
+              var filtersUsed = "";
 
               if (track.newFormatLogReason) {
                 if (track.newFormatLogReason && track.newFormatLogReason.noMatch) {
@@ -1172,7 +1171,7 @@ router.post("/downloadReports", function _callee19(req, res) {
             } // 'ISRC,Title,Artists,Mismatch,Log Reason,Search Time\n'
 
 
-            fileText += "".concat(isrc, ",").concat(title, ",").concat(artist, ",\"").concat(item.misMatch, "\",").concat(item.newFormatLogReason ? item.newFormatLogReason : "", ",\n      ").concat(item.filtersUsed, "      \n      ,").concat(item.searchingTime ? "\"".concat(momentTimeZone(item.searchingTime).tz("America/Los_Angeles").format("YYYY-MM-DD HH:mm:ss"), "\"") : "", "\n"); // console.log(item.searchingTime)
+            fileText += "".concat(isrc, ",").concat(title, ",").concat(artist, ",\"").concat(item.misMatch, "\",").concat(item.newFormatLogReason ? item.newFormatLogReason : "", ",").concat(item.filtersUsed, ",").concat(item.searchingTime ? "\"".concat(momentTimeZone(item.searchingTime).tz("America/Los_Angeles").format("YYYY-MM-DD HH:mm:ss"), "\"") : "", "\n"); // console.log(item.searchingTime)
           }); // console.log(fileText);
 
           res.send({

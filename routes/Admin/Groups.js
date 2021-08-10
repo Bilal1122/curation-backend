@@ -821,9 +821,9 @@ router.post("/downloadReports", async (req, res) => {
     let tracks = [];
 
     myHistories.forEach((history) => {
-      let filtersUsed = "";
       history._track.forEach((track) => {
         let keys = [];
+      let filtersUsed = "";
         if (track.newFormatLogReason) {
           if (track.newFormatLogReason && track.newFormatLogReason.noMatch) {
             track.misMatch = "No Match";
@@ -913,9 +913,7 @@ router.post("/downloadReports", async (req, res) => {
       // 'ISRC,Title,Artists,Mismatch,Log Reason,Search Time\n'
       fileText += `${isrc},${title},${artist},"${item.misMatch}",${
         item.newFormatLogReason ? item.newFormatLogReason : ""
-      },
-      ${item.filtersUsed}      
-      ,${
+      },${item.filtersUsed},${
         item.searchingTime
           ? `"${momentTimeZone(item.searchingTime)
               .tz("America/Los_Angeles")
