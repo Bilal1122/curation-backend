@@ -850,7 +850,8 @@ router.post("/downloadReports", async (req, res) => {
                 track.newFormatLogReason.pro
                   ? track.newFormatLogReason.pro + " "
                   : ""
-              }`.replace(/( ?)(?:(?:\d+\.\d+)|(?:\.\d+)|(?:\d+))%( ?)/g, " ");
+              }`;
+              // .replace(/( ?)(?:(?:\d+\.\d+)|(?:\.\d+)|(?:\d+))%( ?)/g, " ");
 
             // track.filtersUsed = Object.keys(track.newFormatLogReason).forEach((item)=> filtersUsed += `${item}=${track.newFormatLogReason[item]}`)
           }

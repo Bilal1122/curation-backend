@@ -1121,7 +1121,8 @@ router.post("/downloadReports", function _callee19(req, res) {
                   if (track.newFormatLogReason && track.newFormatLogReason.label) keys.push("Label");
                   if (track.newFormatLogReason && track.newFormatLogReason.pro) keys.push("Pro");
                   track.misMatch = keys.join(",");
-                  track.newFormatLogReason = track.newFormatLogReason && "".concat(track.newFormatLogReason.publisher ? track.newFormatLogReason.publisher + " " : "").concat(track.newFormatLogReason.label ? track.newFormatLogReason.label + " " : "").concat(track.newFormatLogReason.pro ? track.newFormatLogReason.pro + " " : "").replace(/( ?)(?:(?:\d+\.\d+)|(?:\.\d+)|(?:\d+))%( ?)/g, " "); // track.filtersUsed = Object.keys(track.newFormatLogReason).forEach((item)=> filtersUsed += `${item}=${track.newFormatLogReason[item]}`)
+                  track.newFormatLogReason = track.newFormatLogReason && "".concat(track.newFormatLogReason.publisher ? track.newFormatLogReason.publisher + " " : "").concat(track.newFormatLogReason.label ? track.newFormatLogReason.label + " " : "").concat(track.newFormatLogReason.pro ? track.newFormatLogReason.pro + " " : ""); // .replace(/( ?)(?:(?:\d+\.\d+)|(?:\.\d+)|(?:\d+))%( ?)/g, " ");
+                  // track.filtersUsed = Object.keys(track.newFormatLogReason).forEach((item)=> filtersUsed += `${item}=${track.newFormatLogReason[item]}`)
                 }
               } else {
                 track.misMatch = "-";
