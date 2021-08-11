@@ -5,6 +5,7 @@ const fs = require("fs");
 const path = require("path");
 const moment = require("moment");
 const momentTimeZone = require("moment-timezone");
+const _ = require("lodash");
 
 // models
 const GroupsPlaylist = require("../../models/GroupsPlaylist");
@@ -823,7 +824,7 @@ router.post("/downloadReports", async (req, res) => {
     myHistories.forEach((history) => {
       history._track.forEach((track) => {
         let keys = [];
-      let filtersUsed = "";
+        let filtersUsed = "";
         if (track.newFormatLogReason) {
           if (track.newFormatLogReason && track.newFormatLogReason.noMatch) {
             track.misMatch = "No Match";
@@ -834,24 +835,33 @@ router.post("/downloadReports", async (req, res) => {
             if (track.newFormatLogReason && track.newFormatLogReason.label)
               keys.push("Label");
             if (track.newFormatLogReason && track.newFormatLogReason.pro)
-              keys.push("Pro");
-            track.misMatch = keys.join(",");
-            track.newFormatLogReason =
-              track.newFormatLogReason &&
-              `${
-                track.newFormatLogReason.publisher
-                  ? track.newFormatLogReason.publisher + " "
-                  : ""
-              }${
-                track.newFormatLogReason.label
-                  ? track.newFormatLogReason.label + " "
-                  : ""
-              }${
-                track.newFormatLogReason.pro
-                  ? track.newFormatLogReason.pro + " "
-                  : ""
-              }`;
-              // .replace(/( ?)(?:(?:\d+\.\d+)|(?:\.\d+)|(?:\d+))%( ?)/g, " ");
+              keys.push("PRO");
+            track.misMatch = keys.join(" / ");
+            let logReasons = Object.values(track.newFormatLogReason).join(
+              "//"
+            );
+            logReasons = logReasons.replace(/(\r\n|\n|\r|\s)/gm, "");
+            logReasons = _.replace(logReasons, "//", " / ");
+            logReasons = _.replace(logReasons, "//Pro", " / PRO");
+            logReasons = _.replace(logReasons, "Pro", "PRO");
+            console.log(logReasons);
+            track.newFormatLogReason = logReasons;
+
+            //   track.newFormatLogReason &&
+            //   `${
+            //     track.newFormatLogReason.publisher
+            //       ? track.newFormatLogReason.publisher
+            //       : ""
+            //   }${
+            //     track.newFormatLogReason.label
+            //       ? " / " + track.newFormatLogReason.label
+            //       : ""
+            //   }${
+            //     track.newFormatLogReason.pro
+            //       ? " / " + track.newFormatLogReason.pro
+            //       : ""
+            //   }`;
+            // // .replace(/( ?)(?:(?:\d+\.\d+)|(?:\.\d+)|(?:\d+))%( ?)/g, " ");
 
             // track.filtersUsed = Object.keys(track.newFormatLogReason).forEach((item)=> filtersUsed += `${item}=${track.newFormatLogReason[item]}`)
           }
@@ -868,10 +878,10 @@ router.post("/downloadReports", async (req, res) => {
               "userPROFilter"
             ].includes(item)
           ) {
-            filtersUsed += `${item}=${history.query[item]} /`;
+            filtersUsed += `${item}=${history.query[item]} / `;
           }
         });
-        track.filtersUsed = filtersUsed.substring(0, filtersUsed.length-1);
+        track.filtersUsed = filtersUsed.substring(0, filtersUsed.length - 2);
         track.searchingTime = history.createdAt;
         tracks.push(track);
       });

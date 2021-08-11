@@ -12,7 +12,9 @@ var path = require("path");
 
 var moment = require("moment");
 
-var momentTimeZone = require("moment-timezone"); // models
+var momentTimeZone = require("moment-timezone");
+
+var _ = require("lodash"); // models
 
 
 var GroupsPlaylist = require("../../models/GroupsPlaylist");
@@ -1119,9 +1121,29 @@ router.post("/downloadReports", function _callee19(req, res) {
                 } else {
                   if (track.newFormatLogReason && track.newFormatLogReason.publisher) keys.push("Publisher");
                   if (track.newFormatLogReason && track.newFormatLogReason.label) keys.push("Label");
-                  if (track.newFormatLogReason && track.newFormatLogReason.pro) keys.push("Pro");
-                  track.misMatch = keys.join(",");
-                  track.newFormatLogReason = track.newFormatLogReason && "".concat(track.newFormatLogReason.publisher ? track.newFormatLogReason.publisher + " " : "").concat(track.newFormatLogReason.label ? track.newFormatLogReason.label + " " : "").concat(track.newFormatLogReason.pro ? track.newFormatLogReason.pro + " " : ""); // .replace(/( ?)(?:(?:\d+\.\d+)|(?:\.\d+)|(?:\d+))%( ?)/g, " ");
+                  if (track.newFormatLogReason && track.newFormatLogReason.pro) keys.push("PRO");
+                  track.misMatch = keys.join(" / ");
+                  var logReasons = Object.values(track.newFormatLogReason).join("//");
+                  logReasons = logReasons.replace(/(\r\n|\n|\r|\s)/gm, "");
+                  logReasons = _.replace(logReasons, "//", " / ");
+                  logReasons = _.replace(logReasons, "//Pro", " / PRO");
+                  logReasons = _.replace(logReasons, "Pro", "PRO");
+                  console.log(logReasons);
+                  track.newFormatLogReason = logReasons; //   track.newFormatLogReason &&
+                  //   `${
+                  //     track.newFormatLogReason.publisher
+                  //       ? track.newFormatLogReason.publisher
+                  //       : ""
+                  //   }${
+                  //     track.newFormatLogReason.label
+                  //       ? " / " + track.newFormatLogReason.label
+                  //       : ""
+                  //   }${
+                  //     track.newFormatLogReason.pro
+                  //       ? " / " + track.newFormatLogReason.pro
+                  //       : ""
+                  //   }`;
+                  // // .replace(/( ?)(?:(?:\d+\.\d+)|(?:\.\d+)|(?:\d+))%( ?)/g, " ");
                   // track.filtersUsed = Object.keys(track.newFormatLogReason).forEach((item)=> filtersUsed += `${item}=${track.newFormatLogReason[item]}`)
                 }
               } else {
@@ -1131,10 +1153,10 @@ router.post("/downloadReports", function _callee19(req, res) {
 
               Object.keys(history.query).map(function (item) {
                 if (["userPublisherFilter", "userLabelFilter", "userPROFilter"].includes(item)) {
-                  filtersUsed += "".concat(item, "=").concat(history.query[item], " /");
+                  filtersUsed += "".concat(item, "=").concat(history.query[item], " / ");
                 }
               });
-              track.filtersUsed = filtersUsed.substring(0, filtersUsed.length - 1);
+              track.filtersUsed = filtersUsed.substring(0, filtersUsed.length - 2);
               track.searchingTime = history.createdAt;
               tracks.push(track);
             });
