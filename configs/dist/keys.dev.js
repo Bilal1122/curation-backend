@@ -1,6 +1,6 @@
 "use strict";
 
-var dev = true;
+var dev = false;
 var KEYS = {
   // others & common
   dev: dev,

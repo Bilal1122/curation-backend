@@ -105,6 +105,35 @@ router.get("/", async (req, res) => {
     });
 });
 
+router.get("/getSearchFilters", async (req, res) =>{
+  let getAllArtists = await Artists.find().catch((err) => {
+    return res.status(400).json(response("SWR", null, null, err));
+  });
+
+  // set unique
+  let filtered = [...new Set(getAllArtists[0].name)];
+  // clean empty ones
+  let Cleanfiltered = filtered.filter(function (el) {
+    return el != "";
+  });
+
+
+  let allGenre = await Genre.findOne().catch((err) => {
+    return res.status(400).json(response("SWR", null, null, err));
+  });
+  
+  let allDecade = await Decade.find().catch((err) => {
+    return res.status(400).json(response("SWR", null, null, err));
+  });
+
+  res.json({
+    status: true,
+    artists: Cleanfiltered,
+    genres: allGenre,
+    decades: allDecade,
+
+  });
+});
 /**
  * @swagger
  * /api/admin/availableTracks/artists:

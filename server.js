@@ -16,44 +16,48 @@ const KEYS = require("./configs/keys");
 // app
 const app = express();
 
-const limiterSeconds = new RateLimit({
-  windowMs: 1000, // 1 second
-  max: 40,
-  message: response(
-    "SWR",
-    "You have reached your search limit. Please contact Crunch Digital.",
-    null,
-    null
-  ),
-});
+// cross servers
+app.use(cors());
+app.options('*', cors()) // include before other routes
 
-const limiterMinutes = new RateLimit({
-  windowMs: 60 * 1000, // 1 minutes
-  max: 60,
-  message: response(
-    "SWR",
-    "You have reached your search limit. Please contact Crunch Digital.",
-    null,
-    null
-  ),
-});
-
-const limiterHour = new RateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 1000,
-  message: response(
-    "SWR",
-    "You have reached your search limit. Please contact Crunch Digital.",
-    null,
-    null
-  ),
-});
-
-app.use(timeout("1000000s"));
-
-app.use([limiterSeconds, limiterMinutes, limiterHour], (req, res, next) => {
-  if (req.rateLimit.limit > req.rateLimit.current) next();
-});
+// const limiterSeconds = new RateLimit({
+//   windowMs: 1000, // 1 second
+//   max: 40,
+//   message: response(
+//     "SWR",
+//     "You have reached your search limit. Please contact Crunch Digital.",
+//     null,
+//     null
+//   ),
+// });
+//
+// const limiterMinutes = new RateLimit({
+//   windowMs: 60 * 1000, // 1 minutes
+//   max: 60,
+//   message: response(
+//     "SWR",
+//     "You have reached your search limit. Please contact Crunch Digital.",
+//     null,
+//     null
+//   ),
+// });
+//
+// const limiterHour = new RateLimit({
+//   windowMs: 60 * 60 * 1000, // 1 hour
+//   max: 1000,
+//   message: response(
+//     "SWR",
+//     "You have reached your search limit. Please contact Crunch Digital.",
+//     null,
+//     null
+//   ),
+// });
+//
+// app.use(timeout("1000000s"));
+//
+// app.use([limiterSeconds, limiterMinutes, limiterHour], (req, res, next) => {
+//   if (req.rateLimit.limit > req.rateLimit.current) next();
+// });
 
 // app.use(limiterMinutes);
 // app.use(function (req, res, next) {
@@ -76,24 +80,12 @@ mongoose
     console.log(err);
   });
 
-
-// cross servers
-app.use(cors());
-app.options('*', cors()) // include before other routes
-
 // Body Parser
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
-
-// initiate swagger
-app.use("/api-docs", swagger.serve, swagger.setup(swaggerDocs));
-
 // static
 app.use("/uploads/", express.static(path.join(__dirname, "uploads")));
-
-const { userAuthVerification } = require("./middleware/jwt");
-
 
 // api
 app.use("/api", require("./routes/router"));
@@ -135,19 +127,3 @@ module.exports = {
   io,
 };
 
-// console.log(['hello', 'worled'].includes(''))
-//"start": "node --max-old-space-size=4096 server.js",
-//"dev": "nodemon --max-old-space-size=4096 server.js",
-
-// change database
-// change database url for available tracks
-// change frontend url for email and verfication
-
-// sendEmail('hadi.tariq02@gmail.com ', '12345', 'resetPassword')
-// console.log(sha256("CrunchAdmin123!"))
-
-// console.log(new Date(1619779192273))
-
-// let test = ["dfds", "asdf"]
-// console.log(test.toString())
-// .replace(/(\r\n|\n|\r|")/gm, '')
