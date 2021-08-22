@@ -453,7 +453,7 @@ router.post("/getManualReport", async (req, res) => {
       .catch((err) => throwErr(err));
 
     getUserHistory.map((item, historyIndex)=>{
-      let check = item._track.filter(track => !track.newFormatLogReason?.noMatch)
+      let check = item._track.filter(track => track.newFormatLogReason && !Object.keys(track.newFormatLogReason).includes("noMatch"))
       console.log({check})
       getUserHistory[historyIndex]._track = check
     })
