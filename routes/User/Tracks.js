@@ -138,7 +138,7 @@ const spotifyTracksProcessor = async (
             spotifyTracks[i].track.matchWithLocalTracks = false;
             spotifyTracks[i].track.matchAtall = false;
             spotifyTracks[i].track.newFormatLogReason.noMatch = 'No Match';
-            if (type == 'noMatch')
+            // if (type == 'noMatch')
             unAvailableTracks.push(spotifyTracks[i]);
           }
           // else {
@@ -293,9 +293,24 @@ router.post('/filterNew', async (req, res) => {
           });
 
 
-        if(!getUserGroupDetails.filterByLicencedPublishers) userPreferences.userPublisherFilter = false
-        if(!getUserGroupDetails.filterByLicencedLabels) userPreferences.userLabelFilter = false
-        if(!getUserGroupDetails.filterByLicencedPROs) userPreferences.userPROFilter = false
+        if(!getUserGroupDetails.filterByLicencedPublishers) {
+            userPreferences.userPublisherFilter = false
+        }else{
+            userPreferences.userPublisherFilter = true
+
+        }
+        if(!getUserGroupDetails.filterByLicencedLabels) {
+            userPreferences.userLabelFilter = false
+        }else{
+            userPreferences.userLabelFilter = true
+
+        }
+        if(!getUserGroupDetails.filterByLicencedPROs) {
+            userPreferences.userPROFilter = false
+        }else{
+            userPreferences.userPROFilter = true
+
+        }
       }
 
       let finalTracks = await spotifyTracksProcessor(
@@ -344,7 +359,7 @@ router.post('/filterNew', async (req, res) => {
       if (!addToSpotify && maintainUnavailable.length && type != 'available') {//unAvailableTracks.length is postive
         let destructUnavailableTracks = [];
         maintainUnavailable.forEach(item => destructUnavailableTracks.push(item.track))
-        console.log(destructUnavailableTracks.length)
+        console.log(userPreferences, "isUSerPreference")
         let historyObject = new History({
           email: userByAuth.email,
           _group: getUserGroupDetails._id,

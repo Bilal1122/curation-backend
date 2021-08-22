@@ -846,30 +846,12 @@ router.post("/downloadReports", async (req, res) => {
             logReasons = _.replace(logReasons, "Pro", "PRO");
             console.log(logReasons);
             track.newFormatLogReason = logReasons;
-
-            //   track.newFormatLogReason &&
-            //   `${
-            //     track.newFormatLogReason.publisher
-            //       ? track.newFormatLogReason.publisher
-            //       : ""
-            //   }${
-            //     track.newFormatLogReason.label
-            //       ? " / " + track.newFormatLogReason.label
-            //       : ""
-            //   }${
-            //     track.newFormatLogReason.pro
-            //       ? " / " + track.newFormatLogReason.pro
-            //       : ""
-            //   }`;
-            // // .replace(/( ?)(?:(?:\d+\.\d+)|(?:\.\d+)|(?:\d+))%( ?)/g, " ");
-
-            // track.filtersUsed = Object.keys(track.newFormatLogReason).forEach((item)=> filtersUsed += `${item}=${track.newFormatLogReason[item]}`)
           }
         } else {
           track.misMatch = "-";
           track.newFormatLogReason = "-";
         }
-
+        console.log(history.query)
         Object.keys(history.query).map((item) => {
           if (
             [

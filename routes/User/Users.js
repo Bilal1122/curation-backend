@@ -448,10 +448,18 @@ router.post("/getManualReport", async (req, res) => {
         }
       ]
     })
+        .lean()
       .sort({ createdAt: -1 })
       .catch((err) => throwErr(err));
+
+    getUserHistory.map((item, historyIndex)=>{
+      let check = item._track.filter(track => !track.newFormatLogReason?.noMatch)
+      console.log({check})
+      getUserHistory[historyIndex]._track = check
+    })
     res.json({ success: true, data: getUserHistory });
   } catch (err) {
+    console.error(err.message)
     res.status(500).send(err.message ? err.message : err);
   }
 });
