@@ -904,7 +904,10 @@ router.post("/oldSearch", async (req, res) => {
               artist,
               userPublisherFilter,
               userLabelFilter,
-              userPROFilter
+              userPROFilter,
+                filterByLicencedPublishers:userPublisherFilter,
+                filterByLicencedLabels:userLabelFilter,
+                 filterByLicencedPROs:userPROFilter
             },
             _track: allUNAvailable,
             success: true,

@@ -109,7 +109,6 @@ router.get("/getSearchFilters", async (req, res) =>{
   let getAllArtists = await Artists.find().catch((err) => {
     return res.status(400).json(response("SWR", null, null, err));
   });
-
   // set unique
   let filtered = [...new Set(getAllArtists[0].name)];
   // clean empty ones
@@ -125,14 +124,18 @@ router.get("/getSearchFilters", async (req, res) =>{
   let allDecade = await Decade.find().catch((err) => {
     return res.status(400).json(response("SWR", null, null, err));
   });
-
   res.json({
     status: true,
-    artists: Cleanfiltered,
-    genres: allGenre,
-    decades: allDecade,
-
+    artists: Cleanfiltered.sort(),
+    genres: allGenre.name.sort(),
+    decades: allDecade[0].name.sort().reverse(),
   });
+  // res.json({
+  //   status: true,
+  //   artists: Cleanfiltered,
+  //   genres: allGenre,
+  //   decades: allDecade,
+  // });
 });
 /**
  * @swagger
