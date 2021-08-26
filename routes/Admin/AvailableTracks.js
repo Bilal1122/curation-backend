@@ -130,12 +130,6 @@ router.get("/getSearchFilters", async (req, res) =>{
     genres: allGenre.name.sort(),
     decades: allDecade[0].name.sort().reverse(),
   });
-  // res.json({
-  //   status: true,
-  //   artists: Cleanfiltered,
-  //   genres: allGenre,
-  //   decades: allDecade,
-  // });
 });
 /**
  * @swagger

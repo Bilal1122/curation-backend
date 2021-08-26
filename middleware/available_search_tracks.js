@@ -438,8 +438,6 @@ async function getTracksWithFiltersLogs (
   filterPreferences,
   finalResults = []
 ) {
-  console.log({limit}, {skip});
-
   let fromDuration = [];
   let toDuration = [];
 
@@ -454,7 +452,6 @@ async function getTracksWithFiltersLogs (
 
   let examine = await AvailableTracks.find(query).explain();
 
-  console.log('returned', examine[0].executionStats.nReturned);
   let allAvailableTracks = [];
 
   if (examine[0].executionStats.nReturned > 100) {
@@ -479,7 +476,6 @@ async function getTracksWithFiltersLogs (
   }
 
 
-  console.log('All found available tracks count', allAvailableTracks.length);
 
   if (allAvailableTracks) {
 
@@ -508,12 +504,6 @@ async function getTracksWithFiltersLogs (
         let durationMatch = trackSeconds >= fromSeconds && trackSeconds <= toSeconds;
 
         // console.log(`---------------${i}----------------`);
-
-        console.log({fromSeconds});
-        console.log({trackSeconds});
-        console.log({toSeconds});
-        console.log(durationMatch);
-
 
         if (durationMatch == false) {
           console.log('Match', allAvailableTracks[i]);
