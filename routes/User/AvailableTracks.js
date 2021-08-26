@@ -429,7 +429,7 @@ router.post("/oldSearch2", async (req, res) => {
               range,
               artist,
               ...filterPreferences,
-              isrc: isrc?.length ? isrc : undefined
+              isrc: isrc && isrc.length ? isrc : undefined
             },
             _track: allUNAvailable,
             success: true,
