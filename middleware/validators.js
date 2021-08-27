@@ -102,7 +102,7 @@ module.exports = {
         //     //     $lte: parseInt(toDuration[1])
         //     //   }
       });
-      // query[0].isSearch = true;
+      query[0].isSearch = true;
     }
 
     // artists

@@ -393,24 +393,20 @@ router.post("/oldSearch2", async (req, res) => {
 
         if (allUNAvailable.length) {
           console.log("Logging need");
-          console.log("isthelength", allUNAvailable.length);
-          console.log(duration_start.length && duration_end.length
-              ? `${duration_start} - ${duration_end}`
-              : undefined,)
-          if (filterPreferences.userPublisherFilter) {
-            for (let i = 0; i < allUNAvailable.length; i++) {
-              for (let j = 0; j < remaining_pubs.length; j++) {
-                // publisher exists or not in the tracks
-                if (
-                  allUNAvailable[i].publishers &&
-                  allUNAvailable[i].publishers[remaining_pubs[j]] &&
-                  allUNAvailable[i].publishers[remaining_pubs[j].toString()]
-                ) {
-                  allUNAvailable[i].publishers[remaining_pubs[j]] = undefined;
-                }
-              }
-            }
-          }
+          // if (filterPreferences.userPublisherFilter) {
+          //   for (let i = 0; i < allUNAvailable.length; i++) {
+          //     for (let j = 0; j < remaining_pubs.length; j++) {
+          //       // publisher exists or not in the tracks
+          //       if (
+          //         allUNAvailable[i].publishers &&
+          //         allUNAvailable[i].publishers[remaining_pubs[j]] &&
+          //         allUNAvailable[i].publishers[remaining_pubs[j].toString()]
+          //       ) {
+          //         allUNAvailable[i].publishers[remaining_pubs[j]] = undefined;
+          //       }
+          //     }
+          //   }
+          // }
           // insert in history
           let historyObject = new History({
             email: updateUserQueryCount.email,
@@ -422,7 +418,7 @@ router.post("/oldSearch2", async (req, res) => {
               bpm:
                 bpm_start && bpm_end ? `${bpm_start} - ${bpm_end}` : undefined,
               minutes:
-                duration_start.length && duration_end.length
+                duration_start && duration_end
                   ? `${duration_start} - ${duration_end}`
                   : undefined,
               seconds,
@@ -467,6 +463,7 @@ router.post("/oldSearch2", async (req, res) => {
       }
     })
     .catch((err) => {
+        console.log(err.message)
       return res
         .status(400)
         .json(
