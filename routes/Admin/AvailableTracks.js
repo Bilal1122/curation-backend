@@ -1149,7 +1149,9 @@ router.post(
 			let Titles = [];
 			let tracks = [];
 			rows.forEach((item) => {
-				ISRCs.push(item.split("\t")[0]);
+				if (item.split("\t")[0] !== '#') {
+					ISRCs.push(item.split("\t")[0]);
+				}
 				Artists.push(item.split("\t")[1]);
 				Titles.push(item.split("\t")[2]);
 				tracks.push({
@@ -1175,23 +1177,6 @@ router.post(
 			if (filterByLicencedLabels)
 				userSearchCriteria.push({label: user_group._labels});
 			
-			let search = {
-				$or: [
-					{$and: [{isrc: {$ne: "#"}}, {isrc: {$in: ISRCs}}]},
-					{
-						$or: [{artist: {$in: Artists}}, {title: {$in: Titles}}],
-					},
-				],
-			};
-			
-			
-			if (userSearchCriteria.length) {
-				search["$and"] = [...userSearchCriteria];
-			}
-			
-			let resultantTracks = await AvailableTracks.find({
-				...search,
-			});
 			let query = {publisher: false, pro: false, label: false};
 			let dataToChildProcess = {
 				ISRCs,
@@ -1207,44 +1192,64 @@ router.post(
 					filterByLicencedLabels,
 				},
 			};
-			
 			let logItems = [];
 			let responseTracks = [];
 			for (let i = 0; i < rows.length; i++) {
 				let rowData = rows[i].split("\t");
-				console.log("title", rowData[1]);
-				console.log("artist", rowData[2]);
-				let isFound = await AvailableTracks.findOne({
-					$or: [
-						{$and: [{isrc: rowData[0]}, {isrc: {$ne: "#"}}]},
-						{
-							$and: [{title: rowData[2]}, {artist: rowData[1]}],
-						},
-					],
-				}).lean();
+				let isFound = {};
+				if (rowData[0] !== '#') {
+					isFound = await AvailableTracks.findOne({
+						$or: [
+							{isrc: rowData[0]},
+							{
+								$and: [{title: rowData[2]}, {artist: {$in: rowData[1]}}],
+							},
+						],
+					}).lean();
+					console.log("mighty if");
+				} else {
+					isFound = await AvailableTracks.findOne({
+						title: rowData[2].trim(), artist: rowData[1].trim()
+					}).lean();
+				}
+				
+				
+				// let isFound = await AvailableTracks.findOne({
+				// 	$or: [
+				// 		{$and: [{isrc: {$ne: "#"}}, {isrc: rowData[0]}]},
+				// 		{
+				// 			$and: [{title: rowData[2]}, {artist: {$in: rowData[1]}}],
+				// 		},
+				// 	],
+				// }).lean();
+				// isFound = await AvailableTracks.findOne(availableTracISRCBased).lean();
+				console.log("isrc", rowData[0]);
+				console.log("title", rowData[2]);
+				console.log("artist", rowData[1]);
 				let labelUnMatchString = "Label(";
 				let proUnMatchString = "Pro(";
 				let publisherUnMatchString = "Publishers(";
 				let isUnavailable = false;
 				if (isFound) {
+					console.log(isFound.title);
+					console.log("_id", isFound._id);
 					isFound.newFormatLogReason = {};
 					let publishersNotMatch = false;
 					let mismatchPublisher = [];
 					if (filterByLicencedPublishers) {
 						isFound.all_pubs.forEach((item) => {
-							console.log(publishersInGroup.includes(item), "pu")
 							if (!publishersInGroup.includes(item)) {
 								mismatchPublisher.push(item);
 							}
 						});
-						if (mismatchPublisher.length) {
+						
+						if (!isFound.all_pubs.length || mismatchPublisher.length) {
 							publishersNotMatch = true;
 							isUnavailable = true;
 						} else {
-							publishersNotMatch = false;
 							isUnavailable = false;
+							publishersNotMatch = false;
 						}
-						console.log("iiiiii", publishersNotMatch)
 						
 						if (publishersNotMatch) {
 							isFound.logReason = [
@@ -1259,11 +1264,12 @@ router.post(
 							);
 							publisherUnMatchString += ")";
 							isFound.newFormatLogReason.publisher = publisherUnMatchString;
-							isUnavailable = true;
-						} else {
-							console.log("In elseeeeeeeeeee")
-							isUnavailable = false
+							// isUnavailable = true;
 						}
+						// else {
+						// 	console.log("In elseeeeeeeeeee")
+						// 	isUnavailable = false
+						// }
 					}
 					//TODO: match with labels user_group._labels -- isFound.labels
 					if (filterByLicencedLabels) {
@@ -1301,7 +1307,8 @@ router.post(
 						isrc: rowData[0].replace(/(\r\n|\n|\r|")/gm, ""),
 						artist: `"${[rowData[1].replace(/(\r\n|\n|\r|")/gm, "")]}"`,
 						title: `"${rowData[2].replace(/(\r\n|\n|\r|")/gm, "")}"`,
-						results: (!filterByLicencedPublishers && !filterByLicencedLabels && !filterByLicencedPROs) || isUnavailable ? "Not Available" : "Available",
+						// results: (!filterByLicencedPublishers && !filterByLicencedLabels && !filterByLicencedPROs) || isUnavailable ? "Not Available" : "Available",
+						results: isUnavailable ? "Not Available" : "Available",
 					});
 					if (isUnavailable) {
 						logItems.push(isFound);
@@ -1320,6 +1327,7 @@ router.post(
 						results: "No Match",
 					};
 				}
+				console.log('-------------------------')
 			}
 			
 			let history = new History({
@@ -1335,9 +1343,7 @@ router.post(
 				type: "TrackNotAvailable",
 			});
 			let isHistoryTaken = await history.save();
-			if (resultantTracks) {
-				return res.send({tracks: responseTracks, headings});
-			}
+			return res.send({tracks: responseTracks, headings});
 		} catch (error) {
 			console.log({error});
 			io.emit("trigger", {
