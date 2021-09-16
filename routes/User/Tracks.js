@@ -227,6 +227,7 @@ router.post('/filterNew', async (req, res) => {
 	let {authorization} = req.headers;
 	let {playlist, _user, type, allTracks, remaining, userPreferences, addToSpotify, userSideOffset, query} = req.body;
 	let allTrackNotPassedWithPercentage = [];
+	let userPreferenceAlias = userPreferences
 	let officialLength = 0;
 	let totalTrackCount = 0;
 	if (!userSideOffset) userSideOffset = 0
@@ -330,13 +331,16 @@ router.post('/filterNew', async (req, res) => {
 			if (!addToSpotify && maintainUnavailable.length && type != 'available') {//unAvailableTracks.length is postive
 				let destructUnavailableTracks = [];
 				maintainUnavailable.forEach(item => destructUnavailableTracks.push(item.track))
-				console.log(userPreferences, "isUSerPreference")
+				console.log(userPreferences, "isUSerPreference");
+				
 				let historyObject = new History({
 					email: userByAuth.email,
 					_group: getUserGroupDetails._id,
 					query: {
 						playlist_name: getPlaylistDetails.name,
-						...userPreferences
+						userPublisherFilter: userPreferenceAlias.filterByLicencedPublishers,
+						userLabelFilter: userPreferenceAlias.filterByLicencedLabels,
+						userPROFilter: userPreferenceAlias.filterByLicencedPROs
 					},
 					_track: destructUnavailableTracks,
 					success: false,

@@ -1334,9 +1334,9 @@ router.post(
 				email: user.email,
 				_group: user_group._id,
 				query: {
-					licencedPublishers: filterByLicencedPublishers,
-					licencedLabels: filterByLicencedLabels,
-					licencedPROs: filterByLicencedPROs,
+					userPublisherFilter: filterByLicencedPublishers,
+					userLabelFilter: filterByLicencedLabels,
+					userPROFilter: filterByLicencedPROs,
 				},
 				_track: logItems,
 				success: true,
