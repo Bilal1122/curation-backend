@@ -28,10 +28,9 @@ module.exports = {
         secure: true, // use SSL
         auth: {
           user: 'gnakadab.dev',
-          pass: 'notAvailable1'
+          pass: 'dnvmdtxhjfcrlrdu'
         }
       });
-      console.log(transporter)
     }
     else {
       console.log("transporter!! else")
