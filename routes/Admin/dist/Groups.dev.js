@@ -1087,7 +1087,7 @@ router.post("/downloadReports", function _callee19(req, res) {
           _group2 = _context21.sent;
           console.log(from, "From");
           console.log(to, "To");
-          console.log("-------------------"); // to = new Date(to).setDate(new Date(to).getDate());
+          // console.log("-------------------"); // to = new Date(to).setDate(new Date(to).getDate());
 
           groupEmail = _group2.groupEmail;
           from = moment(from);

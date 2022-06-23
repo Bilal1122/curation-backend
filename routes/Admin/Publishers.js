@@ -33,7 +33,6 @@ const { response } = require("../../helpers/responses");
  */
 router.get("", async (req, res) => {
   let { authorization } = req.headers;
-console.log("asdfasd")
   // admin verification
   adminAuthVerification(authorization)
     .then(async () => {
@@ -44,7 +43,6 @@ console.log("asdfasd")
         return res.status(400).json(response("SWR"));
       });
 
-      console.log(getAllPublishers,"ALL PUBS")
 
 
       if (getAllPublishers) {

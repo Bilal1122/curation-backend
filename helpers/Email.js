@@ -21,6 +21,7 @@ module.exports = {
     let transporter;
 
     if (KEYS.dev) {
+      console.log("transporter!! if")
       transporter = node_mailer.createTransport({
         host: 'smtp.gmail.com',
         port: 465,
@@ -32,6 +33,7 @@ module.exports = {
       });
     }
     else {
+      console.log("transporter!! else")
       transporter = node_mailer.createTransport({
         name: 'box716.bluehost.com',
         host: 'box716.bluehost.com',

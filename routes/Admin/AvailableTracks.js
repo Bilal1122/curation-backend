@@ -1113,7 +1113,7 @@ router.post(
 			await user.save();
 			
 			// user_group.batchSearchLimit = user_group.batchSearchLimit - rows.length;
-			let updateGroupCount = await Group.findOneAndUpdate(
+			await Group.findOneAndUpdate(
 				{_id: user._group},
 				{
 					$inc: {

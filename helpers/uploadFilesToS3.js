@@ -50,6 +50,7 @@ let processFile = async (fileName, email, reportType, groupName, startFileName, 
   if (!emails.length) {
     emails = [email]
   }
+  
 
   for (let i = 0; i < emails.length; i++) {
     await sendEmail(

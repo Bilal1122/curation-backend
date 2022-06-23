@@ -34,7 +34,6 @@ const Labels = require("../../models/Labels");
  */
 router.get("", async (req, res) => {
   let { authorization } = req.headers;
-console.log("asdfasd")
   // admin verification
   adminAuthVerification(authorization)
     .then(async () => {
@@ -44,7 +43,6 @@ console.log("asdfasd")
       let getAllLabels = await Labels.findOne({}).catch(err => {
         return res.status(400).json(response("SWR"));
       });
-      console.log(getAllLabels, "---------------")
       if (getAllLabels) {
         return res
           .status(200)

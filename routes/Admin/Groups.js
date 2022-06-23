@@ -1,30 +1,30 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const sha256 = require("sha256");
-const fs = require("fs");
-const path = require("path");
-const moment = require("moment");
-const momentTimeZone = require("moment-timezone");
-const _ = require("lodash");
+const sha256 = require('sha256');
+const fs = require('fs');
+const path = require('path');
+const moment = require('moment');
+const momentTimeZone = require('moment-timezone');
+const _ = require('lodash');
 
 // models
-const GroupsPlaylist = require("../../models/GroupsPlaylist");
-const Group = require("../../models/Group");
-const User = require("../../models/User");
-const Publishers = require("../../models/Publishers");
+const GroupsPlaylist = require('../../models/GroupsPlaylist');
+const Group = require('../../models/Group');
+const User = require('../../models/User');
+const Publishers = require('../../models/Publishers');
 
 // middleware
-const { newAuthToken, adminAuthVerification } = require("../../middleware/jwt");
-const { isValid } = require("../../middleware/validators");
-const { response } = require("../../helpers/responses");
-const AvailableTracks = require("../../models/AvailableTracks");
-const History = require("../../models/History");
-const { ReportsGenerator } = require("../../helpers/CRONJobGenerator");
-const { processFile } = require("../../helpers/uploadFilesToS3");
+const { newAuthToken, adminAuthVerification } = require('../../middleware/jwt');
+const { isValid } = require('../../middleware/validators');
+const { response } = require('../../helpers/responses');
+const AvailableTracks = require('../../models/AvailableTracks');
+const History = require('../../models/History');
+const { ReportsGenerator } = require('../../helpers/CRONJobGenerator');
+const { processFile } = require('../../helpers/uploadFilesToS3');
 
 const socketG = {
   io: null,
-  client: null
+  client: null,
 };
 
 const groupSocket = (io, client) => {
@@ -67,7 +67,7 @@ const groupSocket = (io, client) => {
  *      400:
  *        description: failed
  */
-router.post("/", async (req, res) => {
+router.post('/', async (req, res) => {
   let { authorization } = req.headers;
   let { name, _publisher } = req.body;
   await isValid({ name, _publisher })
@@ -77,12 +77,12 @@ router.post("/", async (req, res) => {
         .then(async () => {
           let newGroup = new Group({
             name: name.trim(),
-            _publisher
+            _publisher,
           });
 
           // save a new group
           let groupRegistered = await newGroup.save().catch((err) => {
-            return res.status(400).json(response("SWR", null, null, err));
+            return res.status(400).json(response('SWR', null, null, err));
           });
 
           console.log(groupRegistered);
@@ -91,8 +91,8 @@ router.post("/", async (req, res) => {
               .status(200)
               .json(
                 response(
-                  "S",
-                  "New Group registration !",
+                  'S',
+                  'New Group registration !',
                   { group: groupRegistered },
                   null
                 )
@@ -101,16 +101,16 @@ router.post("/", async (req, res) => {
             return res
               .status(400)
               .json(
-                response("SWR", "Registration failed. Try again!", null, null)
+                response('SWR', 'Registration failed. Try again!', null, null)
               );
           }
         })
         .catch((err) => {
-          return res.status(400).json(response("PD", null, null, err));
+          return res.status(400).json(response('PD', null, null, err));
         });
     })
     .catch((err) => {
-      return res.status(400).json(response("MD", null, null, err));
+      return res.status(400).json(response('MD', null, null, err));
     });
 });
 
@@ -135,32 +135,41 @@ router.post("/", async (req, res) => {
  *      400:
  *        description: failed
  */
-router.get("/", async (req, res) => {
+router.get('/', async (req, res) => {
   let { authorization } = req.headers;
-
+  let { skip, limit, query } = req.query;
+  skip = parseInt(skip);
+  limit = parseInt(limit);
+  console.log({ skip, limit, query });
+  const searchRegex = new RegExp(query, 'ig');
   // admin verification
   adminAuthVerification(authorization)
     .then(async () => {
       // get all groups date sorted
-      let getAllGroups = await Group.find()
+      const total = await Group.countDocuments({ name: searchRegex });
+      let getAllGroups = await Group.find({ name: searchRegex })
         .sort({ updatedAt: -1 })
+        .skip(skip)
+        .limit(limit)
         .catch((err) => {
-          return res.status(400).json(response("SWR"));
+          return res.status(400).json(response('SWR'));
         });
       if (getAllGroups) {
         return res
           .status(200)
-          .json(response("S", "All groups!", { groups: getAllGroups }, null));
+          .json(
+            response('S', 'All groups!', { groups: getAllGroups, total }, null)
+          );
       } else {
         return res
           .status(400)
           .json(
-            response("SWR", "Fetching groups failed. Try again!", null, null)
+            response('SWR', 'Fetching groups failed. Try again!', null, null)
           );
       }
     })
     .catch((err) => {
-      return res.status(400).json(response("PD", null, null, err));
+      return res.status(400).json(response('PD', null, null, err));
     });
 });
 
@@ -185,21 +194,21 @@ router.get("/", async (req, res) => {
  *      400:
  *        description: failed
  */
-router.post("/byId", async (req, res) => {
+router.post('/byId', async (req, res) => {
   let { _id } = req.body;
 
   let getGroup = await Group.findOne({ _id }).catch((err) => {
-    return res.status(400).json(response("SWR"));
+    return res.status(400).json(response('SWR'));
   });
 
   if (getGroup) {
     return res
       .status(200)
-      .json(response("S", "All groups!", { group: getGroup }, null));
+      .json(response('S', 'All groups!', { group: getGroup }, null));
   } else {
     return res
       .status(400)
-      .json(response("SWR", "Fetching groups failed. Try again!", null, null));
+      .json(response('SWR', 'Fetching groups failed. Try again!', null, null));
   }
 });
 
@@ -248,7 +257,7 @@ router.post("/byId", async (req, res) => {
  *      400:
  *        description: failed
  */
-router.put("/", async (req, res) => {
+router.put('/', async (req, res) => {
   let { authorization } = req.headers;
   let {
     _id,
@@ -262,25 +271,25 @@ router.put("/", async (req, res) => {
     filterByLicencedPublishers,
     filterByLicencedLabels,
     filterByLicencedPROs,
-    manualSearchReports
+    manualSearchReports,
   } = req.body;
 
-  console.log(req.body, "------------");
+  console.log(req.body, '------------');
   // admin auth token verification
   adminAuthVerification(authorization)
     .then(async () => {
       let getGroup = await Group.findOne({ _id }).catch((err) => {
         return res
           .status(400)
-          .json(response("SWR", "Invalid group _id. Try again!", null, null));
+          .json(response('SWR', 'Invalid group _id. Try again!', null, null));
       });
-      console.log("update publihsr");
-      console.log(groupEmail, "==============================================");
+      console.log('update publihsr');
+      console.log(groupEmail, '==============================================');
       if (getGroup) {
         // update group
         let allNames = [];
         let aPub = await Publishers.find({
-          _id: { $in: getGroup._publisher }
+          _id: { $in: getGroup._publisher },
         }).catch((er) => console.log(er));
 
         for (let i = 0; i < aPub.length; i++) {
@@ -301,36 +310,36 @@ router.put("/", async (req, res) => {
             filterByLicencedLabels: filterByLicencedLabels,
             filterByLicencedPROs: filterByLicencedPROs,
             groupEmail,
-            manualSearchReports
+            manualSearchReports,
           },
           { new: true }
         ).catch((err) => {
           return res
             .status(400)
             .json(
-              response("SWR", "Publisher update failed. Try again!", null, null)
+              response('SWR', 'Publisher update failed. Try again!', null, null)
             );
         });
         if (updateDoc) {
           // console.log(updateDoc._publisher.length);
           return res
             .status(200)
-            .json(response("S", "Successful", { group: updateDoc }, null));
+            .json(response('S', 'Successful', { group: updateDoc }, null));
         } else {
           return res
             .status(400)
-            .json(response("SWR", "Update failed. Try again!", null, null));
+            .json(response('SWR', 'Update failed. Try again!', null, null));
         }
       } else {
         return res
           .status(400)
           .json(
-            response("SWR", "Make sure group exists. Try again!", null, null)
+            response('SWR', 'Make sure group exists. Try again!', null, null)
           );
       }
     })
     .catch((err) => {
-      return res.status(400).json(response("PD", null, null, err));
+      return res.status(400).json(response('PD', null, null, err));
     });
 });
 
@@ -360,7 +369,7 @@ router.put("/", async (req, res) => {
  *      400:
  *        description: failed
  */
-router.post("/byPlaylistId", async (req, res) => {
+router.post('/byPlaylistId', async (req, res) => {
   let { authorization } = req.headers;
   let { playlist_id } = req.body;
 
@@ -370,23 +379,23 @@ router.post("/byPlaylistId", async (req, res) => {
       // get playlist by id
       let getGroup = await GroupsPlaylist.find({ playlist: playlist_id }).catch(
         (err) => {
-          return res.status(400).json(response("SWR"));
+          return res.status(400).json(response('SWR'));
         }
       );
       if (getGroup) {
         return res
           .status(200)
-          .json(response("S", "All groups!", { group: getGroup }, null));
+          .json(response('S', 'All groups!', { group: getGroup }, null));
       } else {
         return res
           .status(400)
           .json(
-            response("SWR", "Fetching groups failed. Try again!", null, null)
+            response('SWR', 'Fetching groups failed. Try again!', null, null)
           );
       }
     })
     .catch((err) => {
-      return res.status(400).json(response("PD", null, null, err));
+      return res.status(400).json(response('PD', null, null, err));
     });
 });
 
@@ -425,7 +434,7 @@ router.post("/byPlaylistId", async (req, res) => {
  *      400:
  *        description: failed
  */
-router.put("/groupPlaylist", async (req, res) => {
+router.put('/groupPlaylist', async (req, res) => {
   let { authorization } = req.headers;
   let { playlist_id, _groups } = req.body;
   let newArray = _groups;
@@ -434,28 +443,28 @@ router.put("/groupPlaylist", async (req, res) => {
     .then(async () => {
       // delete all playlist by id
       let check = await GroupsPlaylist.deleteMany({
-        playlist: playlist_id
+        playlist: playlist_id,
       }).catch((err) => {
-        return res.status(400).json(response("SWR"));
+        return res.status(400).json(response('SWR'));
       });
 
       for (let i = 0; i < newArray.length; i++) {
         let newGroup = new GroupsPlaylist({
           _group: newArray[i],
-          playlist: playlist_id
+          playlist: playlist_id,
         });
         // save new group with playlist
         await newGroup.save().catch((err) => {
-          return res.status(400).json(response("SWR", null, null, err));
+          return res.status(400).json(response('SWR', null, null, err));
         });
       }
 
       return res
         .status(200)
-        .json(response("S", "update successful.", null, null));
+        .json(response('S', 'update successful.', null, null));
     })
     .catch((err) => {
-      return res.status(400).json(response("PD", null, null, err));
+      return res.status(400).json(response('PD', null, null, err));
     });
 });
 
@@ -480,19 +489,19 @@ router.put("/groupPlaylist", async (req, res) => {
  *      400:
  *        description: failed
  */
-router.patch("/toggleStatus", async (req, res) => {
+router.patch('/toggleStatus', async (req, res) => {
   // try {
   const { _id } = req.body;
-  console.log("jt");
+  console.log('jt');
 
   const group = await Group.findById(_id);
   if (!group) {
-    return res.status(400).send({ message: "Group not available!" });
+    return res.status(400).send({ message: 'Group not available!' });
   }
 
   group.active = !group.active;
 
-  console.log("here!");
+  console.log('here!');
   // console.log(group.active,"-=-=-");
   // console.log(group._user,"------")
 
@@ -506,7 +515,7 @@ router.patch("/toggleStatus", async (req, res) => {
           socketG.client.emit(`logout-${user}`);
         }
       });
-    console.log("Going out!");
+    console.log('Going out!');
   }
 
   console.log(group.active);
@@ -519,7 +528,7 @@ router.patch("/toggleStatus", async (req, res) => {
   // }
 });
 
-router.post("/testing", async (req, res) => {
+router.post('/testing', async (req, res) => {
   try {
     let { group_id } = req.body;
     const groups = await Group.find({ _id: group_id });
@@ -538,8 +547,8 @@ router.post("/testing", async (req, res) => {
 
     const histories = await History.find({
       email: groupsEmails,
-      type: "TrackNotAvailable",
-      createdAt: { $gte: new Date(prevMonth) }
+      type: 'TrackNotAvailable',
+      createdAt: { $gte: new Date(prevMonth) },
     });
 
     for (let i = 0; i < groupsEmails.length; i++) {
@@ -570,7 +579,7 @@ router.post("/testing", async (req, res) => {
       });
 
       // console.log(tracks);
-      let fileText = "ISRC,Title,Artists,Count\n";
+      let fileText = 'ISRC,Title,Artists,Count\n';
       let sortedTracks = tracks.sort((a, b) => {
         return b.logCount - a.logCount;
       });
@@ -582,34 +591,34 @@ router.post("/testing", async (req, res) => {
       });
       // console.log(fileText, "fileTExt");
 
-      let filePath = path.join(__dirname, "../../");
+      let filePath = path.join(__dirname, '../../');
       // console.log(filePath);
-      console.log("----------");
+      console.log('----------');
       console.log(fileText);
-      console.log("----------");
+      console.log('----------');
       // console.log(filePath);
       let fileName = `monthlyReport.csv`;
       try {
-        console.log(group, "------------>");
+        console.log(group, '------------>');
 
         fs.writeFileSync(`${filePath}logs/${fileName}`, fileText);
         await processFile(
           fileName,
           groupsEmails[i],
-          "Monthly Report!",
+          'Monthly Report!',
           groupNames[i]
         );
       } catch (err) {
         console.log(err);
       }
     }
-    res.send("hehe!");
+    res.send('hehe!');
   } catch (err) {
     res.status(500).send(err.message ? { message: err.message } : err);
   }
 });
 
-router.post("/testMonthly", async (req, res) => {
+router.post('/testMonthly', async (req, res) => {
   try {
     const groups = await Group.find({});
 
@@ -627,8 +636,8 @@ router.post("/testMonthly", async (req, res) => {
 
     const histories = await History.find({
       email: groupsEmails,
-      type: "TrackNotAvailable",
-      createdAt: { $gte: new Date(prevMonth) }
+      type: 'TrackNotAvailable',
+      createdAt: { $gte: new Date(prevMonth) },
     });
 
     for (let i = 0; i < groupsEmails.length; i++) {
@@ -659,7 +668,7 @@ router.post("/testMonthly", async (req, res) => {
       });
 
       // console.log(tracks);
-      let fileText = "ISRC,Title,Artists,Count\n";
+      let fileText = 'ISRC,Title,Artists,Count\n';
       let sortedTracks = tracks.sort((a, b) => {
         return b.logCount - a.logCount;
       });
@@ -671,37 +680,37 @@ router.post("/testMonthly", async (req, res) => {
       });
       // console.log(fileText, "fileTExt");
 
-      let filePath = path.join(__dirname, "../../");
+      let filePath = path.join(__dirname, '../../');
       // console.log(filePath);
-      console.log("----------");
-      console.log(fileText);
-      console.log("----------");
+      // console.log("----------");
+      // console.log(fileText);
+      // console.log("----------");
       // console.log(filePath);
       let fileName = `monthlyReport ${groups[0].name}.csv`;
       try {
-        console.log(group, "------------>");
+        // console.log(group, "------------>");
 
         fs.writeFileSync(`${filePath}logs/${fileName}`, fileText);
         await processFile(
           fileName,
           groupsEmails[i],
-          "Monthly Report!",
+          'Monthly Report!',
           groupNames[i]
         );
       } catch (err) {
         console.log(err);
       }
     }
-    res.send("hehe!");
+    res.send('hehe!');
   } catch (err) {
     res.status(500).send(err.message ? { message: err.message } : err);
   }
 });
 
-router.post("/testWeeklyAndMonthly", async (req, res) => {
+router.post('/testWeeklyAndMonthly', async (req, res) => {
   // try {
   let { group_id, type } = req.body;
-  let reports = await ReportsGenerator(group_id, type, "Admin");
+  let reports = await ReportsGenerator(group_id, type, 'Admin');
   return res.json({ success: true });
   // } catch (err) {
   //   console.log(err.message)
@@ -796,68 +805,66 @@ router.post("/testWeeklyAndMonthly", async (req, res) => {
   // }
 });
 
-router.post("/downloadReports", async (req, res) => {
+router.post('/downloadReports', async (req, res) => {
   try {
     let { group_id, from, to, type } = req.body;
     console.log(req.body);
     const group = await Group.findById(group_id);
-    console.log(from, "From");
-    console.log(to, "To");
-    console.log("-------------------");
+    // console.log(from, "From");
+    // console.log(to, "To");
+    // console.log("-------------------");
     // to = new Date(to).setDate(new Date(to).getDate());
 
     const groupEmail = group.groupEmail;
     from = moment(from);
     to = moment(to);
-    from = from.startOf("day");
-    to = to.endOf("day");
+    from = from.startOf('day');
+    to = to.endOf('day');
     const myHistories = await History.find({
       _group: group_id,
       type,
-      createdAt: { $gte: from, $lte: to }
+      createdAt: { $gte: from, $lte: to },
     });
 
-    console.log("----------------------", myHistories.length);
+    console.log('----------------------', myHistories.length);
     let tracksCount = {};
     let tracks = [];
 
     myHistories.forEach((history) => {
       history._track.forEach((track) => {
         let keys = [];
-        let filtersUsed = "";
+        let filtersUsed = '';
         if (track.newFormatLogReason) {
           if (track.newFormatLogReason && track.newFormatLogReason.noMatch) {
-            track.misMatch = "No Match";
-            track.newFormatLogReason = "No Match";
+            track.misMatch = 'No Match';
+            track.newFormatLogReason = 'No Match';
           } else {
             if (track.newFormatLogReason && track.newFormatLogReason.publisher)
-              keys.push("Publisher");
+              keys.push('Publisher');
             if (track.newFormatLogReason && track.newFormatLogReason.label)
-              keys.push("Label");
+              keys.push('Label');
             if (track.newFormatLogReason && track.newFormatLogReason.pro)
-              keys.push("PRO");
-            track.misMatch = keys.join(" / ");
-            let logReasons = Object.values(track.newFormatLogReason).join(
-              "//"
-            );
-            logReasons = logReasons.replace(/(\r\n|\n|\r|\s)/gm, "");
-            logReasons = _.replace(logReasons, "//", " / ");
-            logReasons = _.replace(logReasons, "//Pro", " / PRO");
-            logReasons = _.replace(logReasons, "Pro", "PRO");
+              keys.push('PRO');
+            track.misMatch = keys.join(' / ');
+            let logReasons = Object.values(track.newFormatLogReason).join('//');
+            logReasons = logReasons.replace(/(\r\n|\n|\r|\s)/gm, '');
+            logReasons = _.replace(logReasons, '//', ' / ');
+            logReasons = _.replace(logReasons, '//Pro', ' / PRO');
+            logReasons = _.replace(logReasons, 'Pro', 'PRO');
             console.log(logReasons);
             track.newFormatLogReason = logReasons;
           }
         } else {
-          track.misMatch = "-";
-          track.newFormatLogReason = "-";
+          track.misMatch = '-';
+          track.newFormatLogReason = '-';
         }
-        console.log(history.query)
+        console.log(history.query);
         Object.keys(history.query).map((item) => {
           if (
             [
-              "userPublisherFilter",
-              "userLabelFilter",
-              "userPROFilter"
+              'userPublisherFilter',
+              'userLabelFilter',
+              'userPROFilter',
             ].includes(item)
           ) {
             filtersUsed += `${item}=${history.query[item]} / `;
@@ -870,7 +877,7 @@ router.post("/downloadReports", async (req, res) => {
     });
 
     let fileText =
-      "ISRC,Title,Artists,Mismatch,Log Reason,Filters Used,Timestamp\n";
+      'ISRC,Title,Artists,Mismatch,Log Reason,Filters Used,Timestamp\n';
     // `${item.newFormatLogReason && item.newFormatLogReason.publisher ? ' Publisher ' : ''}
     //  ${item.newFormatLogReason && item.newFormatLogReason.label ? " Label " : ''}
     //  ${item.newFormatLogReason && item.newFormatLogReason.pro ? " PRO " : ''}`
@@ -895,23 +902,23 @@ router.post("/downloadReports", async (req, res) => {
       let isrc = item.isrc;
       let title = `${item.title}`;
       let artist = `${item.artist}`;
-      artist = `"${artist.replace(/(\r\n|\n|\r|")/gm, "")}"`;
-      if (type == "SpotifyTrackNotAvailable") {
+      artist = `"${artist.replace(/(\r\n|\n|\r|")/gm, '')}"`;
+      if (type == 'SpotifyTrackNotAvailable') {
         isrc = item.external_ids && item.external_ids.isrc;
         title = `"${item.name && item.name}"`;
-        artist = item.artists && item.artists.map((art) => art.name).join(" ");
+        artist = item.artists && item.artists.map((art) => art.name).join(' ');
         artist = `"${artist}"`;
       }
 
       // 'ISRC,Title,Artists,Mismatch,Log Reason,Search Time\n'
       fileText += `${isrc},${title},${artist},"${item.misMatch}",${
-        item.newFormatLogReason ? item.newFormatLogReason : ""
+        item.newFormatLogReason ? item.newFormatLogReason : ''
       },${item.filtersUsed},${
         item.searchingTime
           ? `"${momentTimeZone(item.searchingTime)
-              .tz("America/Los_Angeles")
-              .format("YYYY-MM-DD HH:mm:ss")}"`
-          : ""
+              .tz('America/Los_Angeles')
+              .format('YYYY-MM-DD HH:mm:ss')}"`
+          : ''
       }\n`;
       // console.log(item.searchingTime)
     });
@@ -924,7 +931,7 @@ router.post("/downloadReports", async (req, res) => {
   }
 });
 
-router.delete("/:_group", async (req, res) => {
+router.delete('/:_group', async (req, res) => {
   let { _group } = req.params;
   try {
     let userGroup = await Group.deleteOne({ _id: _group });
@@ -932,22 +939,22 @@ router.delete("/:_group", async (req, res) => {
     return res
       .status(200)
       .json(
-        response("S", "user", { message: "user Delete successfully" }, null)
+        response('S', 'user', { message: 'user Delete successfully' }, null)
       );
   } catch (err) {
-    return res.status(400).json(response("PD", null, null, err));
+    return res.status(400).json(response('PD', null, null, err));
   }
 });
 
-router.get("/validity", async (req, res) => {
+router.get('/validity', async (req, res) => {
   let { authorization } = req.headers;
 
   adminAuthVerification(authorization)
     .then(async () => {
-      return res.status(200).json(response("S", "All good", {}, null));
+      return res.status(200).json(response('S', 'All good', {}, null));
     })
     .catch((err) => {
-      return res.status(400).json(response("PD", null, null, err));
+      return res.status(400).json(response('PD', null, null, err));
     });
 });
 

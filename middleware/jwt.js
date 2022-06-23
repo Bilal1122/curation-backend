@@ -1,111 +1,101 @@
-let jwt = require("jsonwebtoken");
+let jwt = require('jsonwebtoken');
+const KEYS = require('../configs/keys');
 
 // Models
-const Admin = require("../models/Admin");
-const User = require("../models/User");
+const Admin = require('../models/Admin');
+const User = require('../models/User');
 
-let dev = false
+let dev = KEYS.dev;
 // methods
 module.exports = {
   newAuthToken: () => {
     let secretKey = jwt.sign(
       {
-        exp: Math.floor(Date.now() / 1000) + 31556952 ,
-        data: "foobar"
+        exp: Math.floor(Date.now() / 1000) + 31556952,
+        data: 'foobar',
       },
-      "secret"
+      'secret'
     );
     return secretKey;
   },
-  adminAuthVerification: auth_token => {
-
-    console.log(auth_token,"-=-=-=-=-=-=-=-=-=--=-")
-
+  adminAuthVerification: (auth_token) => {
     return new Promise(async (resolve, reject) => {
-      if (dev){
+      if (dev) {
         resolve({
-          status: true
+          status: true,
         });
       }
-      let tokenDoc = await Admin.findOne({ auth_token }).catch(
-        err => {
-          reject({
-            status: false,
-            message: "Token validation failed."
-          });
-        }
-      );
-
-      console.log(tokenDoc,"][][][][][][][[]][][[][][][][[][[][[]")
+      let tokenDoc = await Admin.findOne({ auth_token }).catch((err) => {
+        reject({
+          status: false,
+          message: 'Token validation failed.',
+        });
+      });
 
       if (tokenDoc) {
         let secret_key_validity = await verifyAuthToken(auth_token);
         if (secret_key_validity) {
-          console.log(secret_key_validity,"88888888888")
           resolve({
-            status: true
+            status: true,
           });
         } else {
           reject({
             status: false,
-            message: "You don't have access to complete this process right now."
+            message:
+              "You don't have access to complete this process right now.",
           });
         }
       } else {
         reject({
           status: false,
-          message: "You don't have access to complete this process right now."
+          message: "You don't have access to complete this process right now.",
         });
       }
     });
   },
-  userAuthVerification: auth_token => {
+  userAuthVerification: (auth_token) => {
     return new Promise(async (resolve, reject) => {
-      if (dev){
+      if (dev) {
         resolve({
-          status: true
+          status: true,
         });
       }
-      let tokenDoc = await User.findOne({ auth_token }).catch(
-        err => {
-          reject({
-            status: false,
-            message: "Token validation failed."
-          });
-        }
-      );
+      let tokenDoc = await User.findOne({ auth_token }).catch((err) => {
+        reject({
+          status: false,
+          message: 'Token validation failed.',
+        });
+      });
 
       if (tokenDoc) {
         let secret_key_validity = await verifyAuthToken(auth_token);
         if (secret_key_validity) {
           resolve({
-            status: true
+            status: true,
           });
         } else {
           reject({
             status: false,
-            message: "You validation key has expired please login again."
+            message: 'You validation key has expired please login again.',
           });
         }
       } else {
         reject({
           status: false,
-          message: "Token validation failed."
+          message: 'Token validation failed.',
         });
       }
     });
   },
 };
 
-const verifyAuthToken = async secretKey => {
-  console.log(secretKey,"-0-0-0-0-0-")
+const verifyAuthToken = async (secretKey) => {
   let verificationStatus = await jwt.verify(
     secretKey,
-    "secret",
+    'secret',
     (err, validity) => {
       if (err == null) {
         // token is valid
-        console.log({ validity });
         return true;
       } else {
         console.log({ err });
@@ -114,6 +104,5 @@ const verifyAuthToken = async secretKey => {
     }
   );
 
-  console.log(verificationStatus,"][][][][][][{{{{{{")
   return verificationStatus;
 };

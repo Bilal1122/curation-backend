@@ -7,7 +7,7 @@ const KEYS = {
 
   dbURI: dev ?
     "mongodb+srv://logicfab:uUTVrpDeH2cUNodY@cluster0.vmdtd.mongodb.net/test?retryWrites=true&w=majority":
-    "mongodb+srv://logicfab:logicfab5@cluster0.vmdtd.mongodb.net/prod?retryWrites=true&w=majority",
+    "mongodb+srv://logicfab:uUTVrpDeH2cUNodY@cluster0.vmdtd.mongodb.net/prod?retryWrites=true&w=majority",
 
   // mongodbForBadaTesting:
   //   "mongodb+srv://logicfab:logicfab5@cluster0.vmdtd.mongodb.net/cleanDatabase?retryWrites=true&w=majority",

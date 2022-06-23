@@ -36,7 +36,6 @@ const PROs = require("../../models/PROs");
 
 router.get("", async (req, res) => {
   let { authorization } = req.headers;
-console.log("asdfasd")
   // admin verification
   adminAuthVerification(authorization)
     .then(async () => {
