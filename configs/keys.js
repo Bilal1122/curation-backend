@@ -1,12 +1,12 @@
-const dev = false;
+const dev = true;
 const KEYS = {
   // others & common
   dev,
   jwtPrivateKey: "",
-  port: process.env.PORT || 5000,
+  port: process.env.PORT || 5001,
 
   dbURI: dev ?
-    "mongodb+srv://logicfab:logicfab5@cluster0.vmdtd.mongodb.net/test?retryWrites=true&w=majority":
+    "mongodb+srv://logicfab:uUTVrpDeH2cUNodY@cluster0.vmdtd.mongodb.net/test?retryWrites=true&w=majority":
     "mongodb+srv://logicfab:logicfab5@cluster0.vmdtd.mongodb.net/prod?retryWrites=true&w=majority",
 
   // mongodbForBadaTesting:

@@ -98,7 +98,7 @@ app.get("/uploadfile", (req, res, next) => {
 const { ReportsGenerator } = require("./helpers/CRONJobGenerator");
 app.get("/getReportData", async (req, res, next) => {
   // initiateCRONJobs();
-  let reports = await ReportsGenerator("5ef25fe549b6220017d97bf3", "W");
+  let reports = await ReportsGenerator("5f4df570a038f312330ff9fd", "W");
   res.json(reports);
 });
 
@@ -126,4 +126,6 @@ initiateCRONJobs();
 module.exports = {
   io,
 };
+
+// console.log(sha256("password"))
 

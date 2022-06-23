@@ -131,6 +131,7 @@ router.get("/getSearchFilters", async (req, res) => {
 		decades: allDecade[0].name.sort().reverse(),
 	});
 });
+
 /**
  * @swagger
  * /api/admin/availableTracks/artists:

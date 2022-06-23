@@ -1,6 +1,61 @@
-isrc	artist	title
-NOUM71501114	Astrid S	2:00:00 AM
-USUM71705267	"2 Chainz, Travis Scott"	4:00:00 AM
-#	Katy B	5:00:00 AM
-MXUM71300426	J Balvin	6:00:00 AM
-#	Tony Toni Tone	(Lay Your Head On My) Pillow
+ISRC	Artist	Title
+#	"Nio Garcia, J Balvin, Bad Bunny."	AM
+#	Beyonce	Already
+#	Amigo	Lous and The Yakuza
+#	Fouli	Amsterdam
+#	Audrey Nuna	Comic Sans
+#	"Chris Brown, Tyga"	Ayo
+#	"Yung Bleu, Chris Brown & 2 Chainz"	Baddest
+#	Becky G	Bella Ciao
+#	"Davido, Chris Brown"	Blow my mind
+#	BTS	Boy with luv 
+#	BTS	Butter
+#	"Jennifer Lopez, Rauw Alejandro"	Cambia el Paso 
+#	Maluma	Carazon
+#	Yandel feat. Wisin	Como antes
+#	Ozuna	Criminal
+#	Usher	DJ got us falling in love again
+#	BoneyM	Daddy Cool
+#	Lizot & BoneyM	Daddy Cool
+#	"Jamilian, Fouli"	Dejlig
+#	Get Into It (Yuh)	Doja Cat
+#	"Tekno, Lord Afrixana, Mr Eazi, Yemi Alade"	Don't jealous me
+#	Camilla Cabello	Don't go yet
+#	Michael Jackson	Don't stop till you get enough
+#	BTS	Dynamite
+#	Jennifer Lopez	EL ANILLO
+#	Septmeber	Earth Wind & Fire
+#	Davido	FIA
+#	Blacked eyed peas - Maluma	Feel the beat
+#	Pittbull 	Feel this moment
+#	"Larry 44, Gilli"	Filur
+#	"Becky G, El Alfa"	Fulantino
+#	"Black Eyed Peas, Shakira"	GIRL LIKE ME
+#	Daft Punk faet. Pharrell Williams & Nile Rodgers	Get Lucky
+#	Doja Cat 	Get into it (Yuh)
+#	Clara	Girl Like You-chorus
+#	Cindy Lauper	Girls Just Wanna Have Fun
+#	C & C Music Factory 	Gonna make you sweat(everybody dance now)
+#	Nas	Got Ur self a gun
+#	"Black Eyed Peas, Saweetie, Lele Pons"	HIT IT
+#	French Montana feat. Doja Cat feat. Saweetie	Handstand
+#	Maluma	Hawaii
+#	Whitney Houston	How will I know
+#	Thaiboy Digital	I Go I Go
+#	French Montana	I don't really care
+#	Imanbek & Marten Jensen	I'm just feelin' (Du Du Du)
+#	"Benny Jamz, Gilli & Kesi"	Ibiza
+#	Chris Brown	Iffy
+#	Tiscore	In for the kill
+#	"Dimitri Vegas & Like Mike, David Guetta, Daddy Yankee, Afro Bros, Natti Natasha"	Instagram
+#	Run DMC	It's Tricky
+#	Acapulco	Jason Derulo
+#	Jennifer Lopez	Jennifer from the block
+#	Malik Montana x DaChoyce & The Plug 	Jetlag
+#	Doja Cat feat. Tyga	Juicy
+#	Doja Cat  feat. SZA	Kiss me more
+#	Kesha	Tik Tok
+#	"RH, Branco"	Komfortabel
+#	Tai Verde	LAst dAy oN EaRTh
+#	ITZY 	LOCO
+#	Ida Corr	Let me think about it
