@@ -760,6 +760,7 @@ async function readFileOnline(file, fileLink) {
       var data = '';
       res.on('data', function (chunk) {
         data += chunk;
+				console.count("revolve")
       });
       res.on('end', function () {
         console.log(data);
@@ -771,6 +772,7 @@ async function readFileOnline(file, fileLink) {
 }
 router.post('/', uploadCSV.single('availableTracks'), async (req, res) => {
   const { io } = require('../../server');
+	console.log("asdfasdfsdfasdfasdf")
   const { fileLink } = req.body;
   io.emit('trigger', {
     message: 'file uploaded',
