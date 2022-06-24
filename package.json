@@ -4,8 +4,8 @@
   "description": "API for curation portal",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js",
+    "start": "node --max_old_space_size=6144 server.js",
+    "dev": "nodemon --max_old_space_size=6144 server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
