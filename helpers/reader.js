@@ -1,16 +1,16 @@
-const mongoose = require("mongoose");
-const fs = require("fs");
-const PROs = require("../models/PROs");
+const mongoose = require('mongoose');
+const fs = require('fs');
+const PROs = require('../models/PROs');
 
 const Keys = {
-  ARTIST: "artist",
-  GENRE: "genre",
-  DECADE: "decade",
-  TITLE: "title",
-  PRO: "PRO",
-  LABEL: "label",
-  TOTAL_PUB_SHARE: "total_pub_share",
-  duration_seconds: "duration_seconds",
+  ARTIST: 'artist',
+  GENRE: 'genre',
+  DECADE: 'decade',
+  TITLE: 'title',
+  PRO: 'PRO',
+  LABEL: 'label',
+  TOTAL_PUB_SHARE: 'total_pub_share',
+  duration_seconds: 'duration_seconds',
 };
 
 module.exports.readfile = async (filename) => {
@@ -19,7 +19,7 @@ module.exports.readfile = async (filename) => {
       fs.readFile(
         filename,
         {
-          encoding: "utf-8",
+          encoding: 'utf-8',
         },
         (err, data) => {
           if (err) return reject(err);
@@ -28,20 +28,18 @@ module.exports.readfile = async (filename) => {
       );
     }))();
 
-  // console.log(contents, "Contents");
-  contents = contents.split("\n") || [];
-
-  let headers = contents[0].split("\t").map((el) => el.trim());
-  // console.log(headers);
+  contents = contents.split('\n') || [];
+  let headers = contents[0].split('\t').map((el) => el.trim());
+  console.log(headers, '---');
 
   let start = headers.indexOf(Keys.TITLE);
   let end = headers.indexOf(Keys.TOTAL_PUB_SHARE);
 
   if (start == -1) {
-    throw new Error("Title not found");
+    throw new Error('Title not found');
   }
   if (end == -1) {
-    throw new Error("Total pubs not found");
+    throw new Error('Total pubs not found');
   }
 
   contents.splice(0, 1);
@@ -53,7 +51,7 @@ module.exports.readfile = async (filename) => {
         const obj = {};
         obj.publishers = {};
         obj.all_pubs = [];
-        row.split("\t").forEach((tuple, idx) => {
+        row.split('\t').forEach((tuple, idx) => {
           //  array of string
 
           // console.log("Here!");
@@ -61,7 +59,7 @@ module.exports.readfile = async (filename) => {
             // check for publishers
             acc.publishers.add(headers[idx]);
             // console.log(tuple.split("%")[0], "Num");
-            if (parseInt(tuple.split("%")[0].trim())) {
+            if (parseInt(tuple.split('%')[0].trim())) {
               // for stats
               obj.publishers[headers[idx]] = tuple;
               // console.log(obj.publishers[headers[idx]], "--");
@@ -71,7 +69,7 @@ module.exports.readfile = async (filename) => {
           } else {
             obj[headers[idx]] = tuple;
             if (idx == 2) {
-              obj["searchTitle"] = tuple.replace(/['$"]/g, "");
+              obj['searchTitle'] = tuple.replace(/['$"]/g, '');
             }
           }
 
@@ -85,7 +83,7 @@ module.exports.readfile = async (filename) => {
             acc.decade.add(tuple);
           }
           if (headers[idx] == Keys.LABEL) {
-            if (tuple.replace(/(\r\n|\n|\r|")/gm, "").length) {
+            if (tuple.replace(/(\r\n|\n|\r|")/gm, '').length) {
               acc.labels.add(tuple);
             }
           }

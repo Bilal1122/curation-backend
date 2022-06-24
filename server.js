@@ -1,24 +1,24 @@
-var util = require("util");
-const express = require("express");
-const bodyParser = require("body-parser");
-const mongoose = require("mongoose");
-const swagger = require("swagger-ui-express");
-const swaggerDocs = require("./middleware/swagger");
-const cors = require("cors");
-const path = require("path");
-const RateLimit = require("express-rate-limit");
-const timeout = require("connect-timeout");
+const express = require('express');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const swagger = require('swagger-ui-express');
+const swaggerDocs = require('./middleware/swagger');
+const cors = require('cors');
+const path = require('path');
+const RateLimit = require('express-rate-limit');
+const timeout = require('connect-timeout');
 
+exports.rootDir = __dirname;
 // helpers
-const { response } = require("./helpers/responses");
-const KEYS = require("./configs/keys");
+const { response } = require('./helpers/responses');
+const KEYS = require('./configs/keys');
 
 // app
 const app = express();
 
 // cross servers
 app.use(cors());
-app.options('*', cors()) // include before other routes
+app.options('*', cors()); // include before other routes
 
 // const limiterSeconds = new RateLimit({
 //   windowMs: 1000, // 1 second
@@ -73,38 +73,42 @@ mongoose
     useFindAndModify: true,
   })
   .then((db) => {
-    console.log("Database connected.");
+    console.log('Database connected.');
   })
   .catch((err) => {
-    console.log("Database connection failed.");
+    console.log('Database connection failed.');
     console.log(err);
     // process.exit()
   });
 
 // Body Parser
-app.use(bodyParser.json({ limit: "50mb" }));
-app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 // static
-app.use("/uploads/", express.static(path.join(__dirname, "uploads")));
+app.use('/uploads/', express.static(path.join(__dirname, 'uploads')));
 
 // api
-app.use("/api", require("./routes/router"));
+app.use('/api', require('./routes/router'));
 
 // file upload static page
-app.get("/uploadfile", (req, res, next) => {
-  res.send(path.join(__dirname, "views", "file.html"));
+app.get('/uploadfile', (req, res, next) => {
+  res.send(path.join(__dirname, 'views', 'file.html'));
 });
 
-const { ReportsGenerator } = require("./helpers/CRONJobGenerator");
-app.get("/getReportData", async (req, res, next) => {
+const { ReportsGenerator } = require('./helpers/CRONJobGenerator');
+app.get('/getReportData', async (req, res, next) => {
   // initiateCRONJobs();
-  let reports = await ReportsGenerator("5ef25fe549b6220017d97bf3", "W", "allpubsTest");
+  let reports = await ReportsGenerator(
+    '5ef25fe549b6220017d97bf3',
+    'W',
+    'allpubsTest'
+  );
   res.json(reports);
 });
 
-app.get("", (req, res) => {
-  res.json("Welcome to curation digital testers!");
+app.get('', (req, res) => {
+  res.json('Welcome to curation digital testers!');
 });
 
 // port & server
@@ -112,10 +116,10 @@ const server = app.listen(KEYS.port, () => {
   console.log(`Connected to port ${KEYS.port} @ ${new Date()}`);
 });
 
-const socketIO = require("socket.io");
-const { initiateCRONJobs } = require("./helpers/CRONJobs");
-const connectSockets = require("./helpers/connectSockets");
-const sha256 = require("sha256");
+const socketIO = require('socket.io');
+const { initiateCRONJobs } = require('./helpers/CRONJobs');
+const connectSockets = require('./helpers/connectSockets');
+const sha256 = require('sha256');
 
 const io = socketIO.listen(server);
 
@@ -129,4 +133,3 @@ module.exports = {
 };
 
 // console.log(sha256("password"))
-

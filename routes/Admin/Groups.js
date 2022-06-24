@@ -599,7 +599,7 @@ router.post('/testing', async (req, res) => {
       // console.log(filePath);
       let fileName = `monthlyReport.csv`;
       try {
-        console.log(group, '------------>');
+        console.log(group, '--------x---->');
 
         fs.writeFileSync(`${filePath}logs/${fileName}`, fileText);
         await processFile(
