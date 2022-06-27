@@ -820,13 +820,15 @@ router.post('/downloadReports', async (req, res) => {
     to = moment(to);
     from = from.startOf('day');
     to = to.endOf('day');
+    console.log({from})
+    console.log({to})
     const myHistories = await History.find({
       _group: group_id,
       type,
       createdAt: { $gte: from, $lte: to },
     });
 
-    console.log('----------------------', myHistories.length);
+    // console.log('----------------------', myHistories.length);
     let tracksCount = {};
     let tracks = [];
 
@@ -851,14 +853,13 @@ router.post('/downloadReports', async (req, res) => {
             logReasons = _.replace(logReasons, '//', ' / ');
             logReasons = _.replace(logReasons, '//Pro', ' / PRO');
             logReasons = _.replace(logReasons, 'Pro', 'PRO');
-            console.log(logReasons);
+            // console.log(logReasons);
             track.newFormatLogReason = logReasons;
           }
         } else {
           track.misMatch = '-';
           track.newFormatLogReason = '-';
         }
-        console.log(history.query);
         Object.keys(history.query).map((item) => {
           if (
             [

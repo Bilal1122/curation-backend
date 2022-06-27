@@ -951,7 +951,7 @@ router.post(
         $or: [
           { $and: [{ isrc: { $ne: '#' } }, { isrc: { $in: ISRCs } }] },
           {
-            $and: [{ artist: Artists }, { title: Titles }],
+            $and: [{ artist: { $in: Artists } }, { title: { $in: Titles } }],
           },
         ],
       };
@@ -1219,15 +1219,34 @@ router.post(
             $or: [
               { isrc: rowData[0] },
               {
-                $and: [{ title: rowData[2] }, { artist: { $in: rowData[1] } }],
+                $and: [
+                  {
+                    title: {
+                      $regex: rowData[2].replace(/(\r)/gm, ''),
+                      $options: 'i',
+                    },
+                  },
+                  {
+                    artist: {
+                      // $regex: rowData[1].split(','),
+                      // $options: 'i',
+                      $in: rowData[1].split(',').map((i) => new RegExp(i, 'i')),
+                    },
+                  },
+                ],
               },
             ],
           }).lean();
           console.log('mighty if');
         } else {
           isFound = await AvailableTracks.findOne({
-            title: rowData[2].trim(),
-            artist: rowData[1].trim(),
+            title: {
+              $regex: rowData[2].replace(/(\r)/gm, ''),
+              $options: 'i',
+            },
+            artist: {
+              $in: rowData[1].split(',').map((i) => new RegExp(i, 'i')),
+            },
           }).lean();
         }
 
@@ -1240,9 +1259,9 @@ router.post(
         // 	],
         // }).lean();
         // isFound = await AvailableTracks.findOne(availableTracISRCBased).lean();
-        console.log('isrc', rowData[0]);
-        console.log('title', rowData[2]);
-        console.log('artist', rowData[1]);
+        // console.log('isrc', rowData[0]);
+        // console.log('title', rowData[2]);
+        // console.log('artist', rowData[1]);
         let labelUnMatchString = 'Label(';
         let proUnMatchString = 'Pro(';
         let publisherUnMatchString = 'Publishers(';
@@ -1412,11 +1431,11 @@ router.post(
       filterByLicencedPROs = userPreferences.filterByLicencedPROs;
       filterByLicencedPublishers = userPreferences.filterByLicencedPublishers;
 
-      console.log({
-        filterByLicencedLabels,
-        filterByLicencedPROs,
-        filterByLicencedPublishers,
-      });
+      // console.log({
+      //   filterByLicencedLabels,
+      //   filterByLicencedPROs,
+      //   filterByLicencedPublishers,
+      // });
 
       let dir = path.join(__dirname, `../../dataSet/${req.file.filename}`);
       let { rows, headings } = await readMyTextFile(dir, 'admin');
@@ -1456,7 +1475,7 @@ router.post(
         $or: [
           { $and: [{ isrc: { $ne: '#' } }, { isrc: { $in: ISRCs } }] },
           {
-            $and: [{ artist: Artists }, { title: Titles }],
+            $and: [{ artist: { $in: Artists } }, { title: { $in: Titles } }],
           },
         ],
       };
@@ -1491,8 +1510,19 @@ router.post(
         if (!isFound) {
           isFound = await AvailableTracks.findOne({
             $and: [
-              { title: rowData[2].replace(/(\r)/gm, '') },
-              { artist: { $in: rowData[1].split(',') } },
+              {
+                title: {
+                  $regex: rowData[2].replace(/(\r)/gm, ''),
+                  $options: 'i',
+                },
+              },
+              {
+                artist: {
+                  // $regex: rowData[1].split(','),
+                  // $options: 'i',
+                  $in: rowData[1].split(',').map((i) => new RegExp(i, 'i')),
+                },
+              },
             ],
           }).lean();
         }
