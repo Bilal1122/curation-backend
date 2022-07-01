@@ -69,7 +69,7 @@ process.on(
       }
     );
 
-    console.log('Labels Saved');
+    console.log('PRO Saved');
 
     await new Decade({
       name: decade,

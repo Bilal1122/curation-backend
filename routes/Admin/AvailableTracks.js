@@ -772,22 +772,21 @@ async function readFileOnline(file, fileLink) {
 }
 router.post('/', uploadCSV.single('availableTracks'), async (req, res) => {
   const { io } = require('../../server');
-  console.log('asdfasdfsdfasdfasdf');
-  const { fileLink } = req.body;
+  // const { fileLink } = req.body;
   io.emit('trigger', {
     message: 'file uploaded',
   });
   const location = rootDir + '/dataSet/availableTracks.txt';
   try {
-    if (fileLink) {
-      console.log('FILELINK ####');
-      const file = fs.createWriteStream(location);
-      const fileData = await readFileOnline(file, fileLink);
-      console.log(fileData);
-      file.write(fileData, 'utf-8');
-    } else {
-      console.log('FILE ####');
-    }
+    // if (fileLink) {
+    //   console.log('FILELINK ####');
+    //   const file = fs.createWriteStream(location);
+    //   const fileData = await readFileOnline(file, fileLink);
+    //   console.log(fileData);
+    //   file.write(fileData, 'utf-8');
+    // } else {
+    //   console.log('FILE ####');
+    // }
 
     io.emit('trigger', {
       message: 'parsing file',
@@ -807,7 +806,6 @@ router.post('/', uploadCSV.single('availableTracks'), async (req, res) => {
     });
 
     const childProcess = fork('./helpers/storage.js');
-    // console.log(docs)
     childProcess.send(docs);
     childProcess.on('message', ({ message }) => {
       // console.log(message);
@@ -816,9 +814,9 @@ router.post('/', uploadCSV.single('availableTracks'), async (req, res) => {
       });
     });
     childProcess.on('exit', () => {
-      fs.unlink(rootDir + '/dataSet/availableTracks.txt', (err) =>
-        console.log(err)
-      );
+      // fs.unlink(rootDir + '/dataSet/availableTracks.txt', (err) =>
+      //   console.log(err)
+      // );
       io.emit('trigger', {
         message: 'Tracks uploaded Successfully',
       });
@@ -1344,7 +1342,15 @@ router.post(
             artist: `"${[rowData[1].replace(/(\r\n|\n|\r|")/gm, '')]}"`,
             title: `"${rowData[2].replace(/(\r\n|\n|\r|")/gm, '')}"`,
             // results: (!filterByLicencedPublishers && !filterByLicencedLabels && !filterByLicencedPROs) || isUnavailable ? "Not Available" : "Available",
-            results: isUnavailable ? 'Not Available' : 'Available',
+
+            results:
+              !filterByLicencedLabels &&
+              !filterByLicencedPROs &&
+              !filterByLicencedPublishers
+                ? 'Not Available'
+                : isUnavailable
+                ? 'Not Available'
+                : 'Available',
           });
           if (isUnavailable) {
             logItems.push(isFound);
@@ -1626,7 +1632,14 @@ router.post(
             isrc: rowData[0].replace(/(\r\n|\n|\r|")/gm, ''),
             artist: [rowData[1]],
             title: rowData[2].replace(/(\r\n|\n|\r|")/gm, ''),
-            results: isUnavailable ? 'Not Available' : 'Available',
+            results:
+              !filterByLicencedLabels &&
+              !filterByLicencedPROs &&
+              !filterByLicencedPublishers
+                ? 'Not Available'
+                : isUnavailable
+                ? 'Not Available'
+                : 'Available',
             Mismatch: isUnavailable ? `"${keys.join(',')}"` : 'Available',
             newFormatLogReason: `${final}`,
           });

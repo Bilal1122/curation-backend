@@ -1,12 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const swagger = require('swagger-ui-express');
-const swaggerDocs = require('./middleware/swagger');
 const cors = require('cors');
 const path = require('path');
-const RateLimit = require('express-rate-limit');
-const timeout = require('connect-timeout');
 
 exports.rootDir = __dirname;
 // helpers
@@ -66,6 +62,7 @@ app.options('*', cors()); // include before other routes
 // (minutes)'}); else next(); });
 
 // connect mongoDB
+
 mongoose
   .connect(KEYS.dbURI, {
     useNewUrlParser: true,
@@ -118,9 +115,6 @@ const server = app.listen(KEYS.port, () => {
 
 const socketIO = require('socket.io');
 const { initiateCRONJobs } = require('./helpers/CRONJobs');
-const connectSockets = require('./helpers/connectSockets');
-const sha256 = require('sha256');
-
 const io = socketIO.listen(server);
 
 // connectSockets(io)

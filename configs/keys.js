@@ -1,6 +1,5 @@
 const dev = true;
 const KEYS = {
-  // others & common
   dev,
   jwtPrivateKey: "",
   port: process.env.PORT || 5000,
@@ -23,4 +22,5 @@ const KEYS = {
     : "https://crunchdigital.biz/",
   hosted_at: "https://crunchdigital.biz/",
 };
+
 module.exports = KEYS;
