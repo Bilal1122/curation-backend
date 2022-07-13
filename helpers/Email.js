@@ -38,6 +38,7 @@ module.exports = {
         name: 'box716.bluehost.com',
         host: 'box716.bluehost.com',
         port: 465,
+        maxConnections: 10000,
         secure: true,
         auth: {
           user: 'tempo@crunchdigital.com',
