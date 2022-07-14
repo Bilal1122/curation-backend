@@ -3,10 +3,11 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
+const { ReportsGenerator } = require('./helpers/CRONJobGenerator');
+
 
 exports.rootDir = __dirname;
 // helpers
-const { response } = require('./helpers/responses');
 const KEYS = require('./configs/keys');
 
 // app
@@ -14,7 +15,7 @@ const app = express();
 
 // cross servers
 app.use(cors());
-app.options('*', cors()); // include before other routes
+app.options('*', cors()); 
 
 // const limiterSeconds = new RateLimit({
 //   windowMs: 1000, // 1 second
@@ -64,18 +65,13 @@ app.options('*', cors()); // include before other routes
 // connect mongoDB
 
 mongoose
-  .connect(KEYS.dbURI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useFindAndModify: true,
-  })
-  .then((db) => {
+  .connect(KEYS.dbURI)
+  .then((_) => {
     console.log('Database connected.');
   })
   .catch((err) => {
     console.log('Database connection failed.');
     console.log(err);
-    // process.exit()
   });
 
 // Body Parser
@@ -93,9 +89,8 @@ app.get('/uploadfile', (req, res, next) => {
   res.send(path.join(__dirname, 'views', 'file.html'));
 });
 
-const { ReportsGenerator } = require('./helpers/CRONJobGenerator');
+
 app.get('/getReportData', async (req, res, next) => {
-  // initiateCRONJobs();
   let reports = await ReportsGenerator(
     '5ef25fe549b6220017d97bf3',
     'W',
@@ -125,5 +120,3 @@ initiateCRONJobs();
 module.exports = {
   io,
 };
-
-// console.log(sha256("password"))
