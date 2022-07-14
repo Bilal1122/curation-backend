@@ -1,4 +1,4 @@
-const dev = true;
+const dev = false;
 const KEYS = {
   dev,
   jwtPrivateKey: "",

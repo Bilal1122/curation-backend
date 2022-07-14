@@ -1499,8 +1499,6 @@ router.post(
         search['$and'] = [...userSearchCriteria];
       }
 
-      console.log(tracks.length, '<----- file track length');
-      console.log(userSearchCriteria, '<----- search criteria');
 
       let resultantTracks = await AvailableTracks.find({
         ...search,
@@ -1515,6 +1513,7 @@ router.post(
         let isFound = null;
         if (rowData[0] != '#') {
           isFound = await AvailableTracks.findOne({ isrc: rowData[0] }).lean();
+
         }
 
         if (!isFound) {
@@ -1528,8 +1527,6 @@ router.post(
               },
               {
                 artist: {
-                  // $regex: rowData[1].split(','),
-                  // $options: 'i',
                   $in: rowData[1].split(',').map((i) => new RegExp(i, 'i')),
                 },
               },
@@ -1577,6 +1574,8 @@ router.post(
           if (filterByLicencedLabels) {
             if (!isUnavailable && group._labels.includes(isFound.label)) {
             } else {
+              if (!group._labels.includes(isFound.label)){
+                
               isFound.logReason = [
                 {
                   type: 'Label mismatch',
@@ -1587,6 +1586,8 @@ router.post(
               isFound.newFormatLogReason.label =
                 'Label(' + labelUnMatchString + ')';
               isUnavailable = true;
+            }
+
             }
           }
           //TODO: match with pros user_group._PROs -- isFound.PRO
@@ -1632,12 +1633,15 @@ router.post(
                   : ''
               }`
             : 'Available';
+            // console.log(rowData[0], 'FOUND- before', isFound._id, {isUnavailable});
+
           isUnavailable =
             !filterByLicencedLabels &&
             !filterByLicencedPROs &&
             !filterByLicencedPublishers
               ? true
               : isUnavailable;
+              // console.log(rowData[0], 'FOUND- after', isFound._id, {isUnavailable});
 
           responseTracks.push({
             isrc: `"${rowData[0].replace(/(\r\n|\n|\r|")/gm, '')}"`,
@@ -1673,12 +1677,12 @@ router.post(
           };
           logItems.push(isFound);
         }
-        console.log(
-          '-------------newFormatLogReason--------->>',
-          isFound.newFormatLogReason,
-          'name:',
-          isFound.title
-        );
+        // console.log(
+        //   '-------------newFormatLogReason--------->>',
+        //   isFound.newFormatLogReason,
+        //   'name:',
+        //   isFound.title
+        // );
       }
 
       if (resultantTracks) {

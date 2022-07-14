@@ -113,7 +113,7 @@ async function getSpotifyPlaylist(searchQuery, data, limit, skip, cb) {
 
   const response_data = JSON.parse(JSON.stringify(respon.data));
   const next = response_data.next;
-  data = [...data, ...response_data?.items];
+  data = [...data, ...response_data.items];
   console.log('###3', next);
   if (!next)
     return cb({
@@ -127,16 +127,6 @@ async function getSpotifyPlaylist(searchQuery, data, limit, skip, cb) {
 
   skip += limit;
   getSpotifyPlaylist(searchQuery, data, limit, skip, cb);
-
-  // if (1 && data.length < limit) {
-  // } else {
-  //   return cb({
-  //     data,
-  //     skip: response_data.offset,
-  //     limit: response_data.limit,
-  //     total: response_data.total,
-  //   });
-  // }
 }
 
 module.exports = router;
