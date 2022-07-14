@@ -4,13 +4,13 @@ ISRC	Artist	Title
 #	Bernard Herrmann,Esa-Pekka Salonen,Los Angeles Philharmonic	Psycho: A Suite for Strings: The Murder
 #	The Damned	Psychomania
 #	St. Vincent	Psychopath
-#	John Lydon	Psychopath
+TCAAY1144037	John Lydon	Psychopath
 #	Monty Python	Psychopath
 #	Insane Clown Posse	Psychopathic
 #	Slayer	Psychopathy Red
+NLA320886993	Slipknot	Psychosocial
 #	Slipknot	Psychosocial
-#	Slipknot	Psychosocial
-#	Brooke Fraser	Psychosocial
+NLA320886993	Brooke Fraser	Psychosocial
 #	Brooke Fraser	Psychosocial
 #	PAUl brOWn	WInelIgHt
 #	Periphery	Psychosocial
