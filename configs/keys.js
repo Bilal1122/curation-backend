@@ -1,8 +1,8 @@
-const dev = true;
+const dev = false;
 const KEYS = {
   dev,
   jwtPrivateKey: "",
-  port: process.env.PORT || 5001,
+  port: process.env.PORT || 5000,
 
   dbURI: dev ?
     "mongodb+srv://logicfab:uUTVrpDeH2cUNodY@cluster0.vmdtd.mongodb.net/test?retryWrites=true&w=majority":
