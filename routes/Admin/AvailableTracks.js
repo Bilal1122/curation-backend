@@ -1335,6 +1335,12 @@ router.post(
             }
           }
 
+          isUnavailable =
+            !filterByLicencedLabels &&
+            !filterByLicencedPROs &&
+            !filterByLicencedPublishers
+              ? true
+              : isUnavailable;
           console.log(isUnavailable, '==============');
 
           responseTracks.push({
@@ -1501,13 +1507,8 @@ router.post(
       let responseTracks = [];
       for (let i = 0; i < rows.length; i++) {
         let rowData = rows[i].split('\t');
-        console.log('-------------', rowData[2].replace(/(\r)/gm, ''));
         if (rowData.length < 3) continue;
-        console.log(
-          '+++++++++++++++>>>>>',
-          rowData[0],
-          rowData[0] != '#' ? { isrc: rowData[0] } : {}
-        );
+     
         let isFound = null;
         if (rowData[0] != '#') {
           isFound = await AvailableTracks.findOne({ isrc: rowData[0] }).lean();
@@ -1628,10 +1629,17 @@ router.post(
                   : ''
               }`
             : 'Available';
+          isUnavailable =
+            !filterByLicencedLabels &&
+            !filterByLicencedPROs &&
+            !filterByLicencedPublishers
+              ? true
+              : isUnavailable;
+
           responseTracks.push({
-            isrc: rowData[0].replace(/(\r\n|\n|\r|")/gm, ''),
-            artist: [rowData[1]],
-            title: rowData[2].replace(/(\r\n|\n|\r|")/gm, ''),
+            isrc: `"${rowData[0].replace(/(\r\n|\n|\r|")/gm, '')}"`,
+            artist: `"${rowData[1].replace(/(\r\n|\n|\r|")/gm, '')}"`,
+            title: `"${rowData[2].replace(/(\r\n|\n|\r|")/gm, '')}"`,
             results:
               !filterByLicencedLabels &&
               !filterByLicencedPROs &&

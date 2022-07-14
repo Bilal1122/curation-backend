@@ -1,0 +1,18 @@
+ISRC	Artist	Title
+#	MASN	Psycho!
+#	Russ	"Psycho, Pt. 2"
+#	Bernard Herrmann,Esa-Pekka Salonen,Los Angeles Philharmonic	Psycho: A Suite for Strings: The Murder
+#	The Damned	Psychomania
+#	St. Vincent	Psychopath
+#	John Lydon	Psychopath
+#	Monty Python	Psychopath
+#	Insane Clown Posse	Psychopathic
+#	Slayer	Psychopathy Red
+#	Slipknot	Psychosocial
+#	Slipknot	Psychosocial
+#	Brooke Fraser	Psychosocial
+#	Brooke Fraser	Psychosocial
+#	PAUl brOWn	WInelIgHt
+#	Periphery	Psychosocial
+#	The Black Keys	Psychotic Girl
+ARA 821800128.00	Sweet Little Band	Side to Side	
