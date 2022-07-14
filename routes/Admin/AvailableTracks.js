@@ -1212,7 +1212,7 @@ router.post(
       for (let i = 0; i < rows.length; i++) {
         let rowData = rows[i].split('\t');
         let isFound = {};
-        if (rowData[0] !== '#') {
+        if (rowData[0] != '#') {
           isFound = await AvailableTracks.findOne({
             $or: [
               { isrc: rowData[0] },
@@ -1220,14 +1220,12 @@ router.post(
                 $and: [
                   {
                     title: {
-                      $regex: rowData[2].replace(/(\r)/gm, ''),
+                      $regex: rowData[2].replace(/(\r\n|\n|\r|")/gm, ''),
                       $options: 'i',
                     },
                   },
                   {
                     artist: {
-                      // $regex: rowData[1].split(','),
-                      // $options: 'i',
                       $in: rowData[1].split(',').map((i) => new RegExp(i, 'i')),
                     },
                   },
@@ -1238,13 +1236,19 @@ router.post(
           console.log('mighty if');
         } else {
           isFound = await AvailableTracks.findOne({
-            title: {
-              $regex: rowData[2].replace(/(\r)/gm, ''),
-              $options: 'i',
-            },
-            artist: {
-              $in: rowData[1].split(',').map((i) => new RegExp(i, 'i')),
-            },
+            $and: [
+              {
+                title: {
+                  $regex: rowData[2].replace(/(\r\n|\n|\r|")/gm, ''),
+                  $options: 'i',
+                },
+              },
+              {
+                artist: {
+                  $in: rowData[1].split(',').map((i) => new RegExp(i, 'i')),
+                },
+              },
+            ],
           }).lean();
         }
 
@@ -1341,7 +1345,6 @@ router.post(
             !filterByLicencedPublishers
               ? true
               : isUnavailable;
-          console.log(isUnavailable, '==============');
 
           responseTracks.push({
             isrc: rowData[0].replace(/(\r\n|\n|\r|")/gm, ''),
@@ -1508,7 +1511,7 @@ router.post(
       for (let i = 0; i < rows.length; i++) {
         let rowData = rows[i].split('\t');
         if (rowData.length < 3) continue;
-     
+
         let isFound = null;
         if (rowData[0] != '#') {
           isFound = await AvailableTracks.findOne({ isrc: rowData[0] }).lean();
