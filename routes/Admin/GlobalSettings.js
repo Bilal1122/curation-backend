@@ -12,7 +12,7 @@ router.put('', async (req, res) => {
   let { authorization } = req.headers;
   const { freeGroupLimit } = req.body;
 
-  adminAuthVerification('Sdfsdf')
+  adminAuthVerification(authorization)
     .then(async () => {
       console.log('ABOUT TO UPDATE', freeGroupLimit);
       let updateSettings = await GlobalSettingsModel.findOneAndUpdate(

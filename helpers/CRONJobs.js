@@ -38,7 +38,7 @@ const initiateCRONJobs = () => {
   });
 
   // Free groups limit reset
-  schedule.scheduleJob(Date.now() + 2000, async () => {
+  schedule.scheduleJob(monthlyRule, async () => {
     console.log('Reset Monthly group limit Called.');
     await resetFreeGroups();
   });
