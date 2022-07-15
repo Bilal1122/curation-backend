@@ -1499,6 +1499,7 @@ router.post(
         search['$and'] = [...userSearchCriteria];
       }
 
+
       let resultantTracks = await AvailableTracks.find({
         ...search,
       });
@@ -1512,6 +1513,7 @@ router.post(
         let isFound = null;
         if (rowData[0] != '#') {
           isFound = await AvailableTracks.findOne({ isrc: rowData[0] }).lean();
+
         }
 
         if (!isFound) {
@@ -1572,17 +1574,20 @@ router.post(
           if (filterByLicencedLabels) {
             if (!isUnavailable && group._labels.includes(isFound.label)) {
             } else {
-                isFound.logReason = [
-                  {
-                    type: 'Label mismatch',
-                    mismatchedItems: [isFound.label],
-                  },
-                ];
-                labelUnMatchString += isFound.label;
-                isFound.newFormatLogReason.label =
-                  'Label(' + labelUnMatchString + ')';
-                isUnavailable = true;
-              }
+              if (!group._labels.includes(isFound.label)){
+                
+              isFound.logReason = [
+                {
+                  type: 'Label mismatch',
+                  mismatchedItems: [isFound.label],
+                },
+              ];
+              labelUnMatchString += isFound.label;
+              isFound.newFormatLogReason.label =
+                'Label(' + labelUnMatchString + ')';
+              isUnavailable = true;
+            }
+
             }
           }
           //TODO: match with pros user_group._PROs -- isFound.PRO
@@ -1628,7 +1633,7 @@ router.post(
                   : ''
               }`
             : 'Available';
-          // console.log(rowData[0], 'FOUND- before', isFound._id, {isUnavailable});
+            // console.log(rowData[0], 'FOUND- before', isFound._id, {isUnavailable});
 
           isUnavailable =
             !filterByLicencedLabels &&
@@ -1636,7 +1641,7 @@ router.post(
             !filterByLicencedPublishers
               ? true
               : isUnavailable;
-          // console.log(rowData[0], 'FOUND- after', isFound._id, {isUnavailable});
+              // console.log(rowData[0], 'FOUND- after', isFound._id, {isUnavailable});
 
           responseTracks.push({
             isrc: `"${rowData[0].replace(/(\r\n|\n|\r|")/gm, '')}"`,

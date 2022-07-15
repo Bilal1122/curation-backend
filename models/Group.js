@@ -65,6 +65,10 @@ const GROUP = new Schema(
       type: Boolean,
       default: false,
     },
+    freeGroup:{
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

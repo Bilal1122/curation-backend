@@ -272,9 +272,10 @@ router.put('/', async (req, res) => {
     filterByLicencedLabels,
     filterByLicencedPROs,
     manualSearchReports,
+    freeGroup,
   } = req.body;
 
-  console.log(req.body, '------------');
+  console.log(req.body.freeGroup, '------------');
   // admin auth token verification
   adminAuthVerification(authorization)
     .then(async () => {
@@ -311,6 +312,7 @@ router.put('/', async (req, res) => {
             filterByLicencedPROs: filterByLicencedPROs,
             groupEmail,
             manualSearchReports,
+            freeGroup,
           },
           { new: true }
         ).catch((err) => {
@@ -820,8 +822,8 @@ router.post('/downloadReports', async (req, res) => {
     to = moment(to);
     from = from.startOf('day');
     to = to.endOf('day');
-    console.log({from})
-    console.log({to})
+    console.log({ from });
+    console.log({ to });
     const myHistories = await History.find({
       _group: group_id,
       type,
