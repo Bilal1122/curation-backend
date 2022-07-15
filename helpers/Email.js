@@ -1,8 +1,6 @@
 const node_mailer = require('nodemailer');
 const KEYS = require('../configs/keys');
-let fileUploadConfirmationEmail = [
-  'badakang@gmail.com',
-];
+let fileUploadConfirmationEmail = ['badakang@gmail.com'];
 
 module.exports = {
   sendEmail: async (
@@ -21,19 +19,32 @@ module.exports = {
     let transporter;
 
     if (KEYS.dev) {
-      console.log("transporter!! if")
+      console.log('transporter!! if');
+      // transporter = node_mailer.createTransport({
+      //   host: 'smtp.gmail.com',
+      //   port: 465,
+      //   secure: true, // use SSL
+      //   auth: {
+      //     user: 'gnakadab.dev',
+      //     pass: 'dnvmdtxhjfcrlrdu'
+      //   }
+      // });
       transporter = node_mailer.createTransport({
-        host: 'smtp.gmail.com',
+        name: 'box2419.bluehost.com',
+        host: 'box2419.bluehost.com',
         port: 465,
-        secure: true, // use SSL
+        maxConnections: 10000,
+        secure: true,
         auth: {
-          user: 'gnakadab.dev',
-          pass: 'dnvmdtxhjfcrlrdu'
-        }
+          user: 'test1@crunchdigital.com',
+          pass: '3m&Ur4^DG;.L',
+        },
+        tls: {
+          rejectUnauthorized: false,
+        },
       });
-    }
-    else {
-      console.log("transporter!! else")
+    } else {
+      console.log('transporter!! else');
       transporter = node_mailer.createTransport({
         name: 'box716.bluehost.com',
         host: 'box716.bluehost.com',
@@ -42,45 +53,36 @@ module.exports = {
         secure: true,
         auth: {
           user: 'tempo@crunchdigital.com',
-          pass: 'm1.D/bRms-M.'
+          pass: 'm1.D/bRms-M.',
         },
         tls: {
-          rejectUnauthorized: false
-        }
+          rejectUnauthorized: false,
+        },
       });
     }
 
     // gnakadab.dev@gmail.com / notAvailable1!
     switch (type) {
-      case
-      'resetPassword'
-      :
+      case 'resetPassword':
         message = resetPassword(email, vCode);
         break;
-      case
-      'verification'
-      :
+      case 'verification':
         message = verify(email, user_id, userInfo);
         break;
-      case
-      'datasetUpload'
-      :
+      case 'datasetUpload':
         message = datasetUpload(datasetMessage, fileUploadConfirmationEmail[0]);
         break;
-      case
-      'contactUs'
-      :
+      case 'contactUs':
         message = contactUs(datasetMessage, email, 'tempo@crunchdigital.com');
         break;
-      case
-      'userSignedUp'
-      :
+      case 'userSignedUp':
         message = notifyUserSignedUp(userInfo);
         break;
-      case
-      'sendReports'
-      :
+      case 'sendReports':
         message = sendReports(email, fileLink, reportType, title, groupName);
+        break;
+      case 'test':
+        message = testEmail();
         break;
       default:
         break;
@@ -93,14 +95,23 @@ module.exports = {
       }
 
       console.log('Message sent successfully!');
-      console.log('->>', info);
+      // console.log('->>', info);
       transporter.close();
     });
     return;
-  }
+  },
 };
 
-function resetPassword (email, vCode) {
+function testEmail() {
+  return {
+    from: 'tempo@crunchdigital.com',
+    to: `hadi.tariq02@gmail.com`,
+    subject: `T E M P O – Reset password.`,
+    html: `<p>test is a test email</p>`,
+  };
+}
+
+function resetPassword(email, vCode) {
   return {
     from: 'tempo@crunchdigital.com',
     to: `${email}`,
@@ -108,11 +119,11 @@ function resetPassword (email, vCode) {
     html: `<p>Please use this following link to <a href="${KEYS.frontEnd_URL}reset-password/${vCode}">reset your password</a>.</p>
            <p>If you did not request this password change please report it to tempo@crunchdigital.com or you may ignore it.</p>
            <p>If you have any comments or questions, please don't hesitate to reach us at tempo@crunchdigital.com.</p>
-           <p>Crunch Digital</p>`
+           <p>Crunch Digital</p>`,
   };
 }
 
-function verify (email, user_id, userInfo) {
+function verify(email, user_id, userInfo) {
   return {
     from: 'tempo@crunchdigital.com',
     to: email,
@@ -121,11 +132,11 @@ function verify (email, user_id, userInfo) {
            <p>Here is your confirmation!</p>
            <p>Please use this following link to <a href="${KEYS.frontEnd_URL}email-verify/${user_id}">verify your email</a>.</p>
            <p>If you have any comments or questions, please don't hesitate to reach us at tempo@crunchdigital.com.</p>
-           <p>Crunch Digital</p>`
+           <p>Crunch Digital</p>`,
   };
 }
 
-function notifyUserSignedUp (userInfo) {
+function notifyUserSignedUp(userInfo) {
   return {
     from: 'tempo@crunchdigital.com',
     to: 'tempo-newuser@crunchdigital.com',
@@ -134,20 +145,20 @@ function notifyUserSignedUp (userInfo) {
            <p>Group Name: ${userInfo._group.name}</p>
            <p>User Name: ${userInfo.username}</p>
            <p>Email Address: ${userInfo.email}</p>
-           <p>Date: ${userInfo.createdAt}</p>`
+           <p>Date: ${userInfo.createdAt}</p>`,
   };
 }
 
-function datasetUpload (datesetMessage, email) {
+function datasetUpload(datesetMessage, email) {
   return {
     from: 'tempo@crunchdigital.com',
     to: email,
     subject: `Curation Portal -- Data Test`,
-    html: datesetMessage
+    html: datesetMessage,
   };
 }
 
-function contactUs (datasetMessage, from, to) {
+function contactUs(datasetMessage, from, to) {
   return {
     from: from,
     to: to,
@@ -160,11 +171,11 @@ function contactUs (datasetMessage, from, to) {
         <p>Schedule a Call: ${datasetMessage.interestCall ? 'Yes' : 'No'}</p>
         <p>Schedule a Demo: ${datasetMessage.interestDemo ? 'Yes' : 'No'}</p>
         <p>How did you hear about Crunch Digital?: ${datasetMessage.howHear}</p>
-        <p>What would you like to discuss?: ${datasetMessage.whatDiscuss}</p>`
+        <p>What would you like to discuss?: ${datasetMessage.whatDiscuss}</p>`,
   };
 }
 
-function sendReports (to, fileLink, reportType, title, groupName) {
+function sendReports(to, fileLink, reportType, title, groupName) {
   return {
     from: 'tempo@crunchdigital.com',
     to,
@@ -183,6 +194,6 @@ function sendReports (to, fileLink, reportType, title, groupName) {
   </p>
     <a href=${fileLink}>${fileLink}</a>   
   <p>Thank you.</p>
-  </p>Crunch Digital</p>`
+  </p>Crunch Digital</p>`,
   };
 }

@@ -1,7 +1,8 @@
 const schedule = require('node-schedule');
+const Group = require('../models/Group');
 const { resetFreeGroups } = require('../routes/Admin/Groups');
 const { ReportsGenerator } = require('./CRONJobGenerator');
-
+const { sendEmail } = require('../helpers/Email');
 const initiateCRONJobs = () => {
   const test = new schedule.RecurrenceRule();
   test.second = 2;
@@ -42,6 +43,20 @@ const initiateCRONJobs = () => {
     console.log('Reset Monthly group limit Called.');
     await resetFreeGroups();
   });
+
+  // Free groups limit reset
+  // schedule.scheduleJob(Date.now() + 1500, async () => {
+  //   console.log('Email sending tester');
+  //   let listGroups = await Group.find({}).catch((err) => console.log(err));
+  //   listGroups.forEach((i) => {
+  //     const emailList = i?.groupEmail?.replace(/ /gm, '').split(',');
+  //     if (emailList && emailList.length) {
+  //       emailList.forEach((element) => {
+  //         // sendEmail(element, '__', 'test');
+  //       });
+  //     }
+  //   });
+  // });
 };
 
 module.exports = { initiateCRONJobs };

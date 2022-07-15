@@ -5,7 +5,6 @@ const cors = require('cors');
 const path = require('path');
 const { ReportsGenerator } = require('./helpers/CRONJobGenerator');
 
-
 exports.rootDir = __dirname;
 // helpers
 const KEYS = require('./configs/keys');
@@ -15,7 +14,7 @@ const app = express();
 
 // cross servers
 app.use(cors());
-app.options('*', cors()); 
+app.options('*', cors());
 
 // const limiterSeconds = new RateLimit({
 //   windowMs: 1000, // 1 second
@@ -89,7 +88,6 @@ app.get('/uploadfile', (req, res, next) => {
   res.send(path.join(__dirname, 'views', 'file.html'));
 });
 
-
 app.get('/getReportData', async (req, res, next) => {
   let reports = await ReportsGenerator(
     '5ef25fe549b6220017d97bf3',
@@ -110,6 +108,8 @@ const server = app.listen(KEYS.port, () => {
 
 const socketIO = require('socket.io');
 const { initiateCRONJobs } = require('./helpers/CRONJobs');
+
+
 const io = socketIO.listen(server);
 
 // connectSockets(io)
@@ -120,3 +120,4 @@ initiateCRONJobs();
 module.exports = {
   io,
 };
+

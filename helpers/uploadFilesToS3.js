@@ -4,7 +4,7 @@ const multer = require('multer');
 const fs = require('fs');
 const AWS = require('aws-sdk');
 const path = require('path');
-const {sendEmail} = require('./Email');
+const { sendEmail } = require('./Email');
 const moment = require('moment');
 
 const BUCKET_NAME = 'tempo-storage';
@@ -15,7 +15,7 @@ const s3 = new AWS.S3({
   secretAccessKey: IAM_USER_SECRET,
   accessKeyId: IAM_USER_KEY,
   region: 'us-east-2',
-  signatureVersion: 'v4'
+  signatureVersion: 'v4',
 });
 
 const uploadToS3 = (path, filename, type) => {
@@ -25,32 +25,40 @@ const uploadToS3 = (path, filename, type) => {
     Bucket: BUCKET_NAME,
     Key: filename,
     ACL: 'public-read',
-    Body: fileStream
+    Body: fileStream,
   };
 
   return new Promise((resolve, reject) => {
     s3.upload(params, (err, data) => {
       if (err) return reject(err);
-      console.log({data});
+      console.log({ data });
       resolve({
         ...data,
-        type
+        type,
       });
     });
   });
 };
 
-let processFile = async (fileName, email, reportType, groupName, startFileName, endFileName, title) => {
+let processFile = async (
+  fileName,
+  email,
+  reportType,
+  groupName,
+  startFileName,
+  endFileName,
+  title
+) => {
   let filePath = path.join(__dirname, `../logs/${fileName}`);
-  fileName = `TEMPO${reportType} - Tracks Not Available - ${groupName} - (${moment(startFileName).format("YYYY-MM-DD")} - ${moment(endFileName).format("YYYY-MM-DD")}).csv`;
-  const file_uploaded = await uploadToS3(filePath, fileName, 'text');
-  console.log(file_uploaded.Location)
+  fileName = `TEMPO${reportType} - Tracks Not Available - ${groupName} - (${moment(
+    startFileName
+  ).format('YYYY-MM-DD')} - ${moment(endFileName).format('YYYY-MM-DD')}).csv`;
+  let file_uploaded = null;
 
-  let emails = email.split(',');
-  if (!emails.length) {
-    emails = [email]
+  let emails = email?.replace(/ /gm, '').split(',') || '';
+  if (emails.length) {
+    file_uploaded = await uploadToS3(filePath, fileName, 'text');
   }
-  
 
   for (let i = 0; i < emails.length; i++) {
     await sendEmail(
@@ -67,7 +75,7 @@ let processFile = async (fileName, email, reportType, groupName, startFileName, 
     );
   }
   // fs.unlinkSync(filePath);
-  return true
+  return true;
 };
 
-module.exports = {processFile};
+module.exports = { processFile };

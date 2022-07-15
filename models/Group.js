@@ -59,13 +59,14 @@ const GROUP = new Schema(
     },
     groupEmail: {
       type: String,
+      default: '',
       trim: true,
     },
     manualSearchReports: {
       type: Boolean,
       default: false,
     },
-    freeGroup:{
+    freeGroup: {
       type: Boolean,
       default: false,
     },
