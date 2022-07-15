@@ -12,6 +12,7 @@ const GroupsPlaylist = require('../../models/GroupsPlaylist');
 const Group = require('../../models/Group');
 const User = require('../../models/User');
 const Publishers = require('../../models/Publishers');
+const GlobalSetting = require('../../models/Settings');
 
 // middleware
 const { newAuthToken, adminAuthVerification } = require('../../middleware/jwt');
@@ -961,4 +962,25 @@ router.get('/validity', async (req, res) => {
     });
 });
 
-module.exports = { router, groupSocket };
+const resetFreeGroups = async () => {
+  try {
+    const { freeGroupLimit } = await GlobalSetting.findOne({});
+    const findAndUpdateGroups = await Group.updateMany(
+      {
+        freeGroup: true,
+      },
+      { $set: { searchLimit: freeGroupLimit } },
+      { new: true }
+    );
+    console.log('Reset Free Groups: ');
+    return {
+      data: findAndUpdateGroups,
+      success: true,
+    };
+  } catch (err) {
+    console.log('Reset Free Groups failed:', err.message);
+    throw { ...err, success: false };
+  }
+};
+
+module.exports = { router, groupSocket, resetFreeGroups };

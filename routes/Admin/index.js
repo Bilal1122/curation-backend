@@ -10,6 +10,7 @@ const Users = require('./Users');
 const Logs = require('./Logs');
 const Labels = require('./Labels');
 const PROs = require('./PROs');
+const GlobalSettings = require('./GlobalSettings');
 
 router.use('/auth', Auth);
 router.use('/group', Group.router);
@@ -20,5 +21,6 @@ router.use('/user', Users);
 router.use('/logs', Logs);
 router.use('/labels', Labels);
 router.use('/PROs', PROs);
+router.use('/settings', GlobalSettings);
 
 module.exports = router;
