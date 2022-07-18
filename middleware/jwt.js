@@ -20,11 +20,11 @@ module.exports = {
   },
   adminAuthVerification: (auth_token) => {
     return new Promise(async (resolve, reject) => {
-      if (dev) {
-        resolve({
-          status: true,
-        });
-      }
+      // if (dev) {
+      //   resolve({
+      //     status: true,
+      //   });
+      // }
       let tokenDoc = await Admin.findOne({ auth_token }).catch((err) => {
         reject({
           status: false,
