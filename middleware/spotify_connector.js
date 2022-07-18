@@ -14,7 +14,6 @@ module.exports = {
       spotifyApi
         .clientCredentialsGrant()
         .then(data => {
-          console.log("The access token is " + data.body["access_token"]);
           return resolve(data.body["access_token"]);
         })
         .catch(err => {

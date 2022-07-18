@@ -792,7 +792,9 @@ router.post('/', uploadCSV.single('availableTracks'), async (req, res) => {
       message: 'parsing file',
     });
 
-    const docs = await readfile(location);
+    const docs = await readfile(location).catch((err) =>
+      console.log({ err }, '----opu')
+    );
     // console.log(docs, "docs");
     // console.log("ye rahe new pubs", docs.publishers);
     // console.log("ye rahe new pubs", docs.label);
@@ -1212,6 +1214,8 @@ router.post(
       for (let i = 0; i < rows.length; i++) {
         let rowData = rows[i].split('\t');
         let isFound = {};
+        rowData[2] = rowData[2].replace(/(\r\n|\n|\r|")/gm, '');
+        // console.log('ROW ROW ROW ROW DATA', { rowData });
         if (rowData[0] != '#') {
           isFound = await AvailableTracks.findOne({
             $or: [
@@ -1236,19 +1240,13 @@ router.post(
           console.log('mighty if');
         } else {
           isFound = await AvailableTracks.findOne({
-            $and: [
-              {
-                title: {
-                  $regex: rowData[2].replace(/(\r\n|\n|\r|")/gm, ''),
-                  $options: 'i',
-                },
-              },
-              {
-                artist: {
-                  $in: rowData[1].split(',').map((i) => new RegExp(i, 'i')),
-                },
-              },
-            ],
+            title: new RegExp(
+              rowData[2].replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+              'i'
+            ),
+            artist: {
+              $in: rowData[1].split(',').map((i) => new RegExp(i, 'i')),
+            },
           }).lean();
         }
 
@@ -1268,7 +1266,8 @@ router.post(
         let proUnMatchString = 'Pro(';
         let publisherUnMatchString = 'Publishers(';
         let isUnavailable = false;
-        if (isFound) {
+        console.log('##########FOUND', isFound?._id);
+        if (isFound && Object.keys(isFound).length) {
           console.log(isFound.title);
           console.log('_id', isFound._id);
           isFound.newFormatLogReason = {};
@@ -1313,29 +1312,42 @@ router.post(
           if (filterByLicencedLabels) {
             if (!isUnavailable && user_group._labels.includes(isFound.label)) {
             } else {
-              isFound.logReason = [
-                {
-                  type: 'Label mismatch',
-                  mismatchedItems: [isFound.label],
-                },
-              ];
-              labelUnMatchString += isFound.label + ')';
-              isFound.newFormatLogReason.label = labelUnMatchString;
-              isUnavailable = true;
+              if (
+                !user_group._labels.includes(isFound.label) &&
+                isFound.label.length
+              ) {
+                console.log('@@filterByLicencedLabels', isFound.label);
+
+                isFound.logReason = [
+                  {
+                    type: 'Label mismatch',
+                    mismatchedItems: [isFound.label],
+                  },
+                ];
+                labelUnMatchString += isFound.label + ')';
+                isFound.newFormatLogReason.label = labelUnMatchString;
+                isUnavailable = true;
+              }
             }
           }
           //TODO: match with pros user_group._PROs -- isFound.PRO
           if (filterByLicencedPROs) {
             if (!isUnavailable && user_group._PROs.includes(isFound.PRO)) {
             } else {
-              isFound.logReason = [
-                {
-                  type: 'PRO mismatch',
-                  mismatchedItems: [isFound.PRO],
-                },
-              ];
-              proUnMatchString += isFound.PRO + ')';
-              isFound.newFormatLogReason.pro = proUnMatchString;
+              if (
+                !user_group._PROs.includes(isFound.PRO) &&
+                isFound.PRO.length
+              ) {
+                console.log('@@filterByLicencedPROs', isFound.PRO.length);
+                isFound.logReason = [
+                  {
+                    type: 'PRO mismatch',
+                    mismatchedItems: [isFound.PRO],
+                  },
+                ];
+                proUnMatchString += isFound.PRO + ')';
+                isFound.newFormatLogReason.pro = proUnMatchString;
+              }
             }
           }
 
@@ -1499,7 +1511,6 @@ router.post(
         search['$and'] = [...userSearchCriteria];
       }
 
-
       let resultantTracks = await AvailableTracks.find({
         ...search,
       });
@@ -1513,17 +1524,21 @@ router.post(
         let isFound = null;
         if (rowData[0] != '#') {
           isFound = await AvailableTracks.findOne({ isrc: rowData[0] }).lean();
-
         }
+        rowData[2] = rowData[2].replace(/(\r\n|\n|\r|")/gm, '');
 
         if (!isFound) {
           isFound = await AvailableTracks.findOne({
             $and: [
               {
-                title: {
-                  $regex: rowData[2].replace(/(\r)/gm, ''),
-                  $options: 'i',
-                },
+                // title: {
+                //   $regex: rowData[2].replace(/(\r)/gm, ''),
+                //   $options: 'i',
+                // },
+                title: new RegExp(
+                  rowData[2].replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+                  'i'
+                ),
               },
               {
                 artist: {
@@ -1537,7 +1552,12 @@ router.post(
         let labelUnMatchString = '';
         let proUnMatchString = '';
         let publisherUnMatchString = '';
-        let isUnavailable = false;
+        let isUnavailable =
+          !filterByLicencedLabels &&
+          !filterByLicencedPROs &&
+          !filterByLicencedPublishers
+            ? true
+            : false;
 
         if (isFound) {
           isFound.newFormatLogReason = {};
@@ -1574,35 +1594,40 @@ router.post(
           if (filterByLicencedLabels) {
             if (!isUnavailable && group._labels.includes(isFound.label)) {
             } else {
-              if (!group._labels.includes(isFound.label)){
-                
-              isFound.logReason = [
-                {
-                  type: 'Label mismatch',
-                  mismatchedItems: [isFound.label],
-                },
-              ];
-              labelUnMatchString += isFound.label;
-              isFound.newFormatLogReason.label =
-                'Label(' + labelUnMatchString + ')';
-              isUnavailable = true;
-            }
-
+              if (
+                !group._labels.includes(isFound.label) &&
+                isFound.label.length
+              ) {
+                isFound.logReason = [
+                  {
+                    type: 'Label mismatch',
+                    mismatchedItems: [isFound.label],
+                  },
+                ];
+                labelUnMatchString += isFound.label;
+                isFound.newFormatLogReason.label =
+                  'Label(' + labelUnMatchString + ')';
+                isUnavailable = true;
+              }
             }
           }
           //TODO: match with pros user_group._PROs -- isFound.PRO
           if (filterByLicencedPROs) {
             if (!isUnavailable && group._PROs.includes(isFound.PRO)) {
             } else {
-              isFound.logReason = [
-                {
-                  type: 'PRO mismatch',
-                  mismatchedItems: [isFound.PRO],
-                },
-              ];
-              proUnMatchString += isFound.PRO;
-              isFound.newFormatLogReason.pro = 'Pro(' + proUnMatchString + ')';
-              isUnavailable = true;
+              if (isFound.PRO.length) {
+                isFound.logReason = [
+                  {
+                    type: 'PRO mismatch',
+                    mismatchedItems: [isFound.PRO],
+                  },
+                ];
+                proUnMatchString += isFound.PRO;
+                isFound.newFormatLogReason.pro =
+                  'Pro(' + proUnMatchString + ')';
+                isUnavailable = true;
+              }
+
               // logItems.push(isFound)
             }
           }
@@ -1616,6 +1641,13 @@ router.post(
             keys.push('Label');
           if (isFound.newFormatLogReason && isFound.newFormatLogReason.pro)
             keys.push('Pro');
+
+          // isUnavailable =
+          //   !filterByLicencedLabels &&
+          //   !filterByLicencedPROs &&
+          //   !filterByLicencedPublishers
+          //     ? true
+          //     : isUnavailable;
 
           let final = isUnavailable
             ? isFound.newFormatLogReason &&
@@ -1633,15 +1665,9 @@ router.post(
                   : ''
               }`
             : 'Available';
-            // console.log(rowData[0], 'FOUND- before', isFound._id, {isUnavailable});
+          // console.log(rowData[0], 'FOUND- before', isFound._id, {isUnavailable});
 
-          isUnavailable =
-            !filterByLicencedLabels &&
-            !filterByLicencedPROs &&
-            !filterByLicencedPublishers
-              ? true
-              : isUnavailable;
-              // console.log(rowData[0], 'FOUND- after', isFound._id, {isUnavailable});
+          // console.log(rowData[0], 'FOUND- after', isFound._id, {isUnavailable});
 
           responseTracks.push({
             isrc: `"${rowData[0].replace(/(\r\n|\n|\r|")/gm, '')}"`,

@@ -55,7 +55,7 @@ let processFile = async (
   ).format('YYYY-MM-DD')} - ${moment(endFileName).format('YYYY-MM-DD')}).csv`;
   let file_uploaded = null;
 
-  let emails = email?.replace(/ /gm, '').split(',') || '';
+  let emails = email && email.replace(/ /gm, '').split(',') || '';
   if (emails.length) {
     file_uploaded = await uploadToS3(filePath, fileName, 'text');
   }

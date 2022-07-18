@@ -607,7 +607,10 @@ async function getTracksWithFiltersLogs(
           allAvailableTracks[i].labelMatch = true;
           allAvailableTracks[i].matchWithLocalTracks = true;
         } else {
-          if (!pro_list.includes(allAvailableTracks[0].PRO)) {
+          if (
+            !pro_list.includes(allAvailableTracks[0].PRO) &&
+            allAvailableTracks[0].PRO.length
+          ) {
             allAvailableTracks[i].labelMatch = false;
             allAvailableTracks[i].matchWithLocalTracks = false;
             allAvailableTracks[i].logReason = [
@@ -846,17 +849,19 @@ async function getTracksWithoutFiltersLogs(
           data[i].labelMatch = true;
           data[i].matchWithLocalTracks = true;
         } else {
-          data[i].labelMatch = false;
-          data[i].matchWithLocalTracks = false;
-          data[i].logReason = [
-            {
-              type: 'Label mismatch',
-              mismatchedItems: [data[i].label],
-            },
-          ];
-          data[i].newFormatLogReason.label =
-            labelUnMatchString + `${data[i].label})`;
-          isTrackNotAvailable = true;
+          if (!label_list.includes(data[i].label) && data[i].label.length) {
+            data[i].labelMatch = false;
+            data[i].matchWithLocalTracks = false;
+            data[i].logReason = [
+              {
+                type: 'Label mismatch',
+                mismatchedItems: [data[i].label],
+              },
+            ];
+            data[i].newFormatLogReason.label =
+              labelUnMatchString + `${data[i].label})`;
+            isTrackNotAvailable = true;
+          }
         }
       }
       if (filterPreferences.userPROFilter) {
@@ -869,22 +874,25 @@ async function getTracksWithoutFiltersLogs(
         );
         if (
           isTrackNotAvailable === false &&
-          pro_list.includes(data[0].PRO) &&
+          pro_list.includes(data[i].PRO) &&
           data[i].PRO.length
         ) {
           data[i].labelMatch = true;
           data[i].matchWithLocalTracks = true;
         } else {
-          data[i].labelMatch = false;
-          data[i].matchWithLocalTracks = false;
-          data[i].logReason = [
-            {
-              type: 'pro mismatch',
-              mismatchedItems: [data[i].PRO],
-            },
-          ];
-          data[i].newFormatLogReason.pro = proUnMatchString + `${data[i].PRO})`;
-          isTrackNotAvailable = true;
+          if (!pro_list.includes(data[i].PRO) && data[i].PRO.length) {
+            data[i].labelMatch = false;
+            data[i].matchWithLocalTracks = false;
+            data[i].logReason = [
+              {
+                type: 'pro mismatch',
+                mismatchedItems: [data[i].PRO],
+              },
+            ];
+            data[i].newFormatLogReason.pro =
+              proUnMatchString + `${data[i].PRO})`;
+            isTrackNotAvailable = true;
+          }
         }
       }
 

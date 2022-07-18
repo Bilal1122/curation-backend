@@ -14,38 +14,46 @@ const Keys = {
 };
 
 module.exports.readfile = async (filename) => {
-  let contents = await (() =>
-    new Promise((resolve, reject) => {
-      fs.readFile(
-        filename,
-        {
-          encoding: 'utf-8',
-        },
-        (err, data) => {
-          if (err) return reject(err);
-          resolve(data);
-        }
-      );
-    }))();
+  try {
+    let contents = await (() =>
+      new Promise((resolve, reject) => {
+        fs.readFile(
+          filename,
+          {
+            encoding: 'utf-8',
+          },
+          (err, data) => {
+            if (err) return reject(err);
+            resolve(data);
+          }
+        );
+      }))();
 
-  contents = contents.split('\n') || [];
-  let headers = contents[0].split('\t').map((el) => el.trim());
-  console.log(headers, '---');
+    contents = contents.split('\n') || [];
+    let headers = contents[0].split('\t').map((el) => el.trim());
+    console.log(headers, '---');
 
-  let start = headers.indexOf(Keys.TITLE);
-  let end = headers.indexOf(Keys.TOTAL_PUB_SHARE);
+    let start = headers.indexOf(Keys.TITLE);
+    let end = headers.indexOf(Keys.TOTAL_PUB_SHARE);
 
-  if (start == -1) {
-    throw new Error('Title not found');
-  }
-  if (end == -1) {
-    throw new Error('Total pubs not found');
-  }
+    if (start == -1) {
+      throw new Error('Title not found');
+    }
+    if (end == -1) {
+      throw new Error('Total pubs not found');
+    }
 
-  contents.splice(0, 1);
+    contents.splice(0, 1);
 
-  const { availableTracks, artists, genre, decade, publishers, labels, PROs } =
-    contents.reduce(
+    const {
+      availableTracks,
+      artists,
+      genre,
+      decade,
+      publishers,
+      labels,
+      PROs,
+    } = contents.reduce(
       (acc, row) => {
         // string line
         const obj = {};
@@ -113,16 +121,19 @@ module.exports.readfile = async (filename) => {
       }
     );
 
-  // console.log(availableTracks, artists, genre, decade, publishers);
+    // console.log(availableTracks, artists, genre, decade, publishers);
 
-  // console.log(availableTracks[100], "=-92");
-  return {
-    availableTracks: availableTracks,
-    artists: [...artists.values()],
-    genre: [...genre.values()],
-    decade: [...decade.values()],
-    publishers: [...publishers.values()],
-    labels: [...labels.values()],
-    PROs: [...PROs.values()],
-  };
+    // console.log(availableTracks[100], "=-92");
+    return {
+      availableTracks: availableTracks,
+      artists: [...artists.values()],
+      genre: [...genre.values()],
+      decade: [...decade.values()],
+      publishers: [...publishers.values()],
+      labels: [...labels.values()],
+      PROs: [...PROs.values()],
+    };
+  } catch (er) {
+    console.log({ er }, 'from reader file');
+  }
 };

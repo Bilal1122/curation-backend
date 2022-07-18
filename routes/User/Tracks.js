@@ -357,11 +357,7 @@ router.post('/filterNew', async (req, res) => {
           })
           .then((playlistDetails) => playlistDetails.data);
       });
-      console.log(
-        getUserGroupDetails.searchLimit,
-        finalTracks.finalTracks.length,
-        '-->>>'
-      );
+     
 
       if (type == 'unavailable')
         finalTracks.finalTracks = finalTracks.finalTracks.map((i) => {
