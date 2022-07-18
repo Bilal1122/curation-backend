@@ -91,9 +91,8 @@ mongoose
   });
 
 // Body Parser
-// app.use(bodyParser.json({ limit: '150mb' }));
-// app.use(bodyParser.urlencoded({ limit: '150mb', extended: true }));
-app.use(express.json())
+app.use(bodyParser.json({ limit: '350mb' }));
+app.use(bodyParser.urlencoded({ limit: '350mb', extended: true }));
 
 // static
 app.use('/uploads/', express.static(path.join(__dirname, 'uploads')));
