@@ -131,6 +131,7 @@ const server = app.listen(KEYS.port, () => {
 
 const socketIO = require('socket.io');
 const { initiateCRONJobs } = require('./helpers/CRONJobs');
+const Artists = require('./models/Artists');
 
 const io = socketIO.listen(server);
 
