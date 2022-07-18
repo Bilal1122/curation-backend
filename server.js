@@ -4,8 +4,6 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
 const { ReportsGenerator } = require('./helpers/CRONJobGenerator');
-const Sentry = require('@sentry/node');
-const Tracing = require('@sentry/tracing');
 
 exports.rootDir = __dirname;
 // helpers
@@ -13,27 +11,6 @@ const KEYS = require('./configs/keys');
 
 // app
 const app = express();
-// Sentry.init({
-//   dsn: 'https://f958378e55b94d158cfdbd4b3de07050@o1323715.ingest.sentry.io/6581605',
-//   integrations: [
-//     // enable HTTP calls tracing
-//     new Sentry.Integrations.Http({ tracing: true }),
-//     // enable Express.js middleware tracing
-//     new Tracing.Integrations.Express({ app }),
-//   ],
-
-//   // Set tracesSampleRate to 1.0 to capture 100%
-//   // of transactions for performance monitoring.
-//   // We recommend adjusting this value in production
-//   tracesSampleRate: 1.0,
-// });
-// app.use(Sentry.Handlers.requestHandler());
-
-// Body Parser
-// app.use(bodyParser.json({ limit: '350mb' }));
-// app.use(bodyParser.urlencoded({ limit: '350mb', extended: true }));
-
-app.use(express.json({ limit: '300mb' }));
 
 // cross servers
 app.use(cors());
@@ -96,6 +73,10 @@ mongoose
     console.log(err);
   });
 
+// Body Parser
+app.use(bodyParser.json({ limit: '250mb' }));
+app.use(bodyParser.urlencoded({ limit: '250mb', extended: true }));
+
 // static
 app.use('/uploads/', express.static(path.join(__dirname, 'uploads')));
 
@@ -120,8 +101,6 @@ app.get('', (req, res) => {
   res.json('Welcome to curation digital testers!');
 });
 
-// app.use(Sentry.Handlers.errorHandler());
-
 // port & server
 const server = app.listen(KEYS.port, () => {
   console.log(`Connected to port ${KEYS.port} @ ${new Date()}`);
@@ -130,7 +109,10 @@ const server = app.listen(KEYS.port, () => {
 const socketIO = require('socket.io');
 const { initiateCRONJobs } = require('./helpers/CRONJobs');
 
+
 const io = socketIO.listen(server);
+
+// connectSockets(io)
 
 //CRON JOBS
 initiateCRONJobs();
@@ -138,4 +120,4 @@ initiateCRONJobs();
 module.exports = {
   io,
 };
-// // --max-old-space-size=4096
+
