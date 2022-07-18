@@ -108,6 +108,7 @@ const server = app.listen(KEYS.port, () => {
 
 const socketIO = require('socket.io');
 const { initiateCRONJobs } = require('./helpers/CRONJobs');
+const Artists = require('./models/Artists');
 
 
 const io = socketIO.listen(server);
@@ -121,3 +122,6 @@ module.exports = {
   io,
 };
 
+
+
+Artists.findOne({}).then(r => console.log(r.name.length))

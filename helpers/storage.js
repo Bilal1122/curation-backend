@@ -32,16 +32,28 @@ process.on(
     // console.log(artists)
     // console.log(availableTracks.length);
 
-    await AvailableTracks.deleteMany();
-    await Artists.deleteMany();
-    await Decade.deleteMany();
-    await Genre.deleteMany();
+    // TODO: enable 4 below line to remove content before uploading
+    // await AvailableTracks.deleteMany();
+    // await Artists.deleteMany();
+    // await Decade.deleteMany();
+    // await Genre.deleteMany();
 
     console.log('collections truncated');
 
-    await new Artists({
-      name: artists,
-    }).save();
+    // await new Artists({
+    //   name: artists,
+    // }).save();
+
+    await Artists.findOneAndUpdate(
+      {},
+      {
+        $addToSet: { name: { $each: artists } },
+      },
+      {
+        upsert: true,
+        new: true,
+      }
+    );
 
     console.log('Artists Saved');
 
@@ -71,24 +83,48 @@ process.on(
 
     console.log('PRO Saved');
 
-    await new Decade({
-      name: decade,
-    }).save();
+    // await new Decade({
+    //   name: decade,
+    // }).save();
+
+    await Decade.findOneAndUpdate(
+      {},
+      {
+        $addToSet: { name: { $each: decade } },
+      },
+      {
+        new: true,
+        upsert: true,
+      }
+    );
 
     console.log('Decade Saved');
 
-    await new Genre({
-      name: genre,
-    }).save();
+    // await new Genre({
+    //   name: genre,
+    // }).save();
+
+    await Genre.findOneAndUpdate(
+      {},
+      {
+        $addToSet: { name: { $each: genre } },
+      },
+      {
+        new: true,
+        upsert: true,
+      }
+    );
 
     console.log('Decade Saved');
-
+    const uniquePubs = [];
     for await (const pub of publishers) {
       const found = await Publishers.findOne({
         name: pub,
       });
-      if (!found) await new Publishers({ name: pub }).save();
+      if (!found) uniquePubs.push(pub); //await new Publishers({ name: pub }).save();
     }
+
+    await Publishers.insertMany(uniquePubs);
 
     const chunks = chunk(availableTracks, CHUNK_LIMIT);
 
@@ -104,7 +140,7 @@ process.on(
         )}  / ${100}%`,
       });
     }
-    console.log('AvailableTracks Saved');  
+    console.log('AvailableTracks Saved');
 
     process.exit();
   }

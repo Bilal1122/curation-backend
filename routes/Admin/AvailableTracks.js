@@ -796,8 +796,6 @@ router.post('/', uploadCSV.single('availableTracks'), async (req, res) => {
       console.log({ err }, '----opu')
     );
     // console.log(docs, "docs");
-    // console.log("ye rahe new pubs", docs.publishers);
-    // console.log("ye rahe new pubs", docs.label);
 
     io.emit('trigger', {
       message: 'file parsed',
@@ -816,13 +814,19 @@ router.post('/', uploadCSV.single('availableTracks'), async (req, res) => {
       });
     });
     childProcess.on('exit', () => {
-      // fs.unlink(rootDir + '/dataSet/availableTracks.txt', (err) =>
-      //   console.log(err)
-      // );
       io.emit('trigger', {
         message: 'Tracks uploaded Successfully',
       });
       console.log('process exited');
+
+      fs.unlink(rootDir + '/dataSet/availableTracks.txt', (err) => {
+        if (err) {
+          console.error(err, 'FILE REMOVE EEROR');
+        }
+      });
+      // fs.unlink(rootDir + '/dataSet/availableTracks.txt', (err) =>
+      //   console.log(err)
+      // );
     });
   } catch (error) {
     console.log({ error });
