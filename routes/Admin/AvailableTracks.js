@@ -772,6 +772,7 @@ async function readFileOnline(file, fileLink) {
   });
 }
 router.post('/', uploadCSV.single('availableTracks'), async (req, res) => {
+  console.log("availableTracks uploader")
   const { io } = require('../../server');
   // const { fileLink } = req.body;
   io.emit('trigger', {

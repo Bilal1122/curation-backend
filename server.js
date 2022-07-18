@@ -13,21 +13,21 @@ const KEYS = require('./configs/keys');
 
 // app
 const app = express();
-Sentry.init({
-  dsn: 'https://f958378e55b94d158cfdbd4b3de07050@o1323715.ingest.sentry.io/6581605',
-  integrations: [
-    // enable HTTP calls tracing
-    new Sentry.Integrations.Http({ tracing: true }),
-    // enable Express.js middleware tracing
-    new Tracing.Integrations.Express({ app }),
-  ],
+// Sentry.init({
+//   dsn: 'https://f958378e55b94d158cfdbd4b3de07050@o1323715.ingest.sentry.io/6581605',
+//   integrations: [
+//     // enable HTTP calls tracing
+//     new Sentry.Integrations.Http({ tracing: true }),
+//     // enable Express.js middleware tracing
+//     new Tracing.Integrations.Express({ app }),
+//   ],
 
-  // Set tracesSampleRate to 1.0 to capture 100%
-  // of transactions for performance monitoring.
-  // We recommend adjusting this value in production
-  tracesSampleRate: 1.0,
-});
-app.use(Sentry.Handlers.requestHandler());
+//   // Set tracesSampleRate to 1.0 to capture 100%
+//   // of transactions for performance monitoring.
+//   // We recommend adjusting this value in production
+//   tracesSampleRate: 1.0,
+// });
+// app.use(Sentry.Handlers.requestHandler());
 
 // cross servers
 app.use(cors());
@@ -100,10 +100,6 @@ app.use('/uploads/', express.static(path.join(__dirname, 'uploads')));
 // api
 app.use('/api', require('./routes/router'));
 
-app.get('/debug-sentry', function mainHandler(req, res) {
-  throw new Error('My first Sentry error!');
-});
-
 // file upload static page
 app.get('/uploadfile', (req, res, next) => {
   res.send(path.join(__dirname, 'views', 'file.html'));
@@ -122,7 +118,7 @@ app.get('', (req, res) => {
   res.json('Welcome to curation digital testers!');
 });
 
-app.use(Sentry.Handlers.errorHandler());
+// app.use(Sentry.Handlers.errorHandler());
 
 // port & server
 const server = app.listen(KEYS.port, () => {
@@ -133,8 +129,6 @@ const socketIO = require('socket.io');
 const { initiateCRONJobs } = require('./helpers/CRONJobs');
 
 const io = socketIO.listen(server);
-
-// connectSockets(io)
 
 //CRON JOBS
 initiateCRONJobs();
