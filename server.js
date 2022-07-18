@@ -91,8 +91,9 @@ mongoose
   });
 
 // Body Parser
-app.use(bodyParser.json({ limit: '150mb' }));
-app.use(bodyParser.urlencoded({ limit: '150mb', extended: true }));
+// app.use(bodyParser.json({ limit: '150mb' }));
+// app.use(bodyParser.urlencoded({ limit: '150mb', extended: true }));
+app.use(express.json())
 
 // static
 app.use('/uploads/', express.static(path.join(__dirname, 'uploads')));
@@ -131,7 +132,6 @@ const server = app.listen(KEYS.port, () => {
 
 const socketIO = require('socket.io');
 const { initiateCRONJobs } = require('./helpers/CRONJobs');
-const Artists = require('./models/Artists');
 
 const io = socketIO.listen(server);
 
