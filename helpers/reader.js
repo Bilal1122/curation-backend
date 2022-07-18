@@ -56,6 +56,7 @@ module.exports.readfile = async (filename) => {
     } = contents.reduce(
       (acc, row) => {
         // string line
+        console.log('Rolling file', Math.random());
         const obj = {};
         obj.publishers = {};
         obj.all_pubs = [];

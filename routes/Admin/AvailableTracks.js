@@ -172,6 +172,7 @@ router.get('/artists', async (req, res) => {
       let Cleanfiltered = filtered.filter(function (el) {
         return el != '';
       });
+      console.log(Cleanfiltered.length, "LLLLLLLLLLLLLLLL")
       return res
         .status(200)
         .json(
@@ -788,6 +789,10 @@ router.post('/', uploadCSV.single('availableTracks'), async (req, res) => {
     //   console.log('FILE ####');
     // }
 
+    res.send({
+      message: `Processing file.`,
+    });
+    
     io.emit('trigger', {
       message: 'parsing file',
     });
@@ -801,9 +806,7 @@ router.post('/', uploadCSV.single('availableTracks'), async (req, res) => {
       message: 'file parsed',
     });
 
-    res.send({
-      message: `file uploaded having ${docs.availableTracks.length} records`,
-    });
+   
 
     const childProcess = fork('./helpers/storage.js');
     childProcess.send(docs);
