@@ -29,6 +29,12 @@ const app = express();
 // });
 // app.use(Sentry.Handlers.requestHandler());
 
+// Body Parser
+// app.use(bodyParser.json({ limit: '350mb' }));
+// app.use(bodyParser.urlencoded({ limit: '350mb', extended: true }));
+
+app.use(express.json({ limit: '300mb' }));
+
 // cross servers
 app.use(cors());
 app.options('*', cors());
@@ -90,10 +96,6 @@ mongoose
     console.log(err);
   });
 
-// Body Parser
-app.use(bodyParser.json({ limit: '350mb' }));
-app.use(bodyParser.urlencoded({ limit: '350mb', extended: true }));
-
 // static
 app.use('/uploads/', express.static(path.join(__dirname, 'uploads')));
 
@@ -136,4 +138,4 @@ initiateCRONJobs();
 module.exports = {
   io,
 };
-// // --max-old-space-size=4096 
+// // --max-old-space-size=4096
