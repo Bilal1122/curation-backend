@@ -46,12 +46,17 @@ process.on(
 
     const artistlist = await Artists.findOne({});
     const uniqueArtist = [];
-    artists.forEach((i) => {
-      console.log(i);
-      if (!artistlist?.name?.includes(i)) {
-        uniqueArtist.push(i);
-      }
-    });
+    if (!artistlist || !artistlist.name.length) {
+      artists.forEach((i) => {
+        console.log(i);
+        if (!artistlist?.name?.includes(i)) {
+          uniqueArtist.push(i);
+        }
+      });
+    } else {
+      uniqueArtist = [...artistlist];
+    }
+    
     console.log({ uniqueArtist }, '----~~~~~~~//////');
     const artistsChunk = chunk(uniqueArtist, 1500);
     let artistCounter = 0;
