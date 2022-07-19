@@ -50,7 +50,7 @@ process.on(
     if (artistlist && artistlist.name.length) {
       artists.forEach((i) => {
         console.log(i);
-        if (!artistlist?.name?.includes(i)) {
+        if (!artistlist.name.includes(i)) {
           uniqueArtist.push(i);
         }
       });
