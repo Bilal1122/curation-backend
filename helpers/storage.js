@@ -44,18 +44,30 @@ process.on(
     //   name: artists,
     // }).save();
 
-    await Artists.findOneAndUpdate(
-      {},
-      {
-        $addToSet: { name: { $each: artists } },
-      },
-      {
-        upsert: true,
-        new: true,
+    const artistlist = await Artists.findOne({});
+    const uniqueArtist = [];
+    artists.forEach((i) => {
+      console.log(i);
+      if (!artistlist?.name?.includes(i)) {
+        uniqueArtist.push(i);
       }
-    );
-
-    console.log('Artists Saved');
+    });
+    console.log({ uniqueArtist }, '----~~~~~~~//////');
+    const artistsChunk = chunk(uniqueArtist, 1500);
+    let artistCounter = 0;
+    for await (const slice of artistsChunk) {
+      await Artists.findOneAndUpdate(
+        {},
+        {
+          $addToSet: { name: slice },
+        },
+        {
+          upsert: true,
+          new: true,
+        }
+      ).catch((err) => console.log('ARTIST ERR', err.message));
+      console.log('Artists Saved', artistCounter++);
+    }
 
     await Labels.findOneAndUpdate(
       {},
@@ -66,7 +78,7 @@ process.on(
         upsert: true,
         new: true,
       }
-    );
+    ).catch((err) => console.log('Labels ERR', err.message));
 
     console.log('Labels Saved');
 
@@ -79,7 +91,7 @@ process.on(
         new: true,
         upsert: true,
       }
-    );
+    ).catch((err) => console.log('PRO ERR', err.message));
 
     console.log('PRO Saved');
 
@@ -96,7 +108,7 @@ process.on(
         new: true,
         upsert: true,
       }
-    );
+    ).catch((err) => console.log('Decade ERR', err.message));
 
     console.log('Decade Saved');
 
@@ -113,9 +125,10 @@ process.on(
         new: true,
         upsert: true,
       }
-    );
+    ).catch((err) => console.log('Genre ERR', err.message));
 
-    console.log('Decade Saved');
+    console.log('Genre Saved');
+
     const uniquePubs = [];
     for await (const pub of publishers) {
       const found = await Publishers.findOne({
@@ -123,9 +136,11 @@ process.on(
       });
       if (!found) uniquePubs.push(pub); //await new Publishers({ name: pub }).save();
     }
-
-    await Publishers.insertMany(uniquePubs);
-
+    const assemblePubs = [];
+    uniquePubs.forEach((i) => assemblePubs.push({ name: i }));
+    await Publishers.insertMany(assemblePubs).catch((err) =>
+      console.log('Publishers ERR', err.message)
+    );
     const chunks = chunk(availableTracks, CHUNK_LIMIT);
 
     // console.log(chunks[0], "chunk");
@@ -134,6 +149,11 @@ process.on(
     for await (const slice of chunks) {
       await AvailableTracks.insertMany(slice);
       counter++;
+      console.log({
+        message: `files uploaded : ${((counter / chunks.length) * 100).toFixed(
+          2
+        )}  / ${100}%`,
+      });
       process.send({
         message: `files uploaded : ${((counter / chunks.length) * 100).toFixed(
           2
