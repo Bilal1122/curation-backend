@@ -45,7 +45,8 @@ process.on(
     // }).save();
 
     const artistlist = await Artists.findOne({});
-    const uniqueArtist = [];
+    let uniqueArtist = [];
+    console.log(artistlist)
     if (artistlist && artistlist.name.length) {
       artists.forEach((i) => {
         console.log(i);
@@ -54,7 +55,7 @@ process.on(
         }
       });
     } else {
-      uniqueArtist = [...artistlist];
+      uniqueArtist = [...artists];
     }
 
     console.log({ uniqueArtist }, '----~~~~~~~//////');
