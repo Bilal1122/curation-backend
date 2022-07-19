@@ -66,6 +66,7 @@ const { initiateCRONJobs } = require('./helpers/CRONJobs');
 const Artists = require('./models/Artists');
 
 
+
 const io = socketIO.listen(server);
 
 // connectSockets(io)
@@ -76,9 +77,3 @@ initiateCRONJobs();
 module.exports = {
   io,
 };
-
-
-// Artists.deleteOne({})
-
-// Artists.findOne({}).then( r => console.log(r.name.length)).catch(e => console.log(e))
-
