@@ -11,7 +11,7 @@ const { dbURI } = require('../configs/keys');
 const Labels = require('../models/Labels');
 const PRO = require('../models/PROs');
 
-const CHUNK_LIMIT = 10;
+const CHUNK_LIMIT = 1000;
 
 process.on(
   'message',
@@ -33,10 +33,10 @@ process.on(
     // console.log(availableTracks.length);
 
     // TODO: enable 4 below line to remove content before uploading
-    // await AvailableTracks.deleteMany();
-    // await Artists.deleteMany();
-    // await Decade.deleteMany();
-    // await Genre.deleteMany();
+    await AvailableTracks.deleteMany();
+    await Artists.deleteMany();
+    await Decade.deleteMany();
+    await Genre.deleteMany();
 
     console.log('collections truncated');
 
@@ -147,11 +147,8 @@ process.on(
     );
     const chunks = chunk(availableTracks, CHUNK_LIMIT);
 
-    // console.log(chunks[0], "chunk");
-
     let counter = 0;
     for await (const slice of chunks) {
-      console.log(slice);
       console.log(slice.length * (counter + 1), 'LLLL');
 
       await AvailableTracks.insertMany(slice, { ordered: false }).catch((err) =>
