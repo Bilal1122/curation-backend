@@ -11,7 +11,7 @@ const { dbURI } = require('../configs/keys');
 const Labels = require('../models/Labels');
 const PRO = require('../models/PROs');
 
-const CHUNK_LIMIT = 1000;
+const CHUNK_LIMIT = 10;
 
 process.on(
   'message',
@@ -46,10 +46,9 @@ process.on(
 
     const artistlist = await Artists.findOne({});
     let uniqueArtist = [];
-    console.log(artistlist)
+    console.log(artistlist);
     if (artistlist && artistlist.name.length) {
       artists.forEach((i) => {
-        console.log(i);
         if (!artistlist.name.includes(i)) {
           uniqueArtist.push(i);
         }
@@ -58,8 +57,7 @@ process.on(
       uniqueArtist = [...artists];
     }
 
-    console.log({ uniqueArtist }, '----~~~~~~~//////');
-    const artistsChunk = chunk(uniqueArtist, 1500);
+    const artistsChunk = chunk(uniqueArtist, CHUNK_LIMIT);
     let artistCounter = 0;
     for await (const slice of artistsChunk) {
       await Artists.findOneAndUpdate(
@@ -153,7 +151,13 @@ process.on(
 
     let counter = 0;
     for await (const slice of chunks) {
-      await AvailableTracks.insertMany(slice);
+      console.log(slice);
+      console.log(slice.length * (counter + 1), 'LLLL');
+
+      await AvailableTracks.insertMany(slice, { ordered: false }).catch((err) =>
+        console.log('AVT slice error', err.message)
+      );
+
       counter++;
       console.log({
         message: `files uploaded : ${((counter / chunks.length) * 100).toFixed(
