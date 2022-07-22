@@ -31,6 +31,13 @@ const generateLogsForTrack = async (
     track.matchWithLocalTracks = false;
     if (userPreferences.filterByLicencedPublishers) {
       let isUnavailable = false;
+      if (!getUserGroupDetails._publisher.length) {
+        track.matchWithLocalTracks = false;
+        track.publisherUnMatch = false;
+        isUnavailable = true;
+        isAnyPubMisMatch = true;
+      }
+      
       for (let j = 0; j < getUserGroupDetails._publisher.length; j++) {
         if (getUserGroupDetails._publisher[j]) {
           let isPublisherInIt =
@@ -61,7 +68,7 @@ const generateLogsForTrack = async (
       let publisherUnMatchString = 'Publishers(';
       if (track.publisherUnMatch === false) {
         let allPubsOfTracks = Object.keys(getTrack.publishers);
-        console.log(getUserGroupDetails.pub_names, "---------ALLL")
+        console.log(getUserGroupDetails.pub_names, '---------ALLL');
         allPubsOfTracks.forEach((item) => {
           if (!getUserGroupDetails.pub_names.includes(item)) {
             publisherUnMatchString += `${item}(${getTrack.publishers[item]}) `;
@@ -108,10 +115,7 @@ const generateLogsForTrack = async (
     let proUnMatchString = 'Pro(';
     if (userPreferences.filterByLicencedPROs && getTrack.PRO.length) {
       const exists = getUserGroupDetails._labels.includes(getTrack.label);
-      if (
-        !exists ||
-        !getTrack.PRO.length
-      ) {
+      if (!exists || !getTrack.PRO.length) {
         proUnMatchString += `${getTrack.PRO}`;
         track.matchWithLocalTracks = false;
         isAnyPubMisMatch = true;
