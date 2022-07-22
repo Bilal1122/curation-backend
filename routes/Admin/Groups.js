@@ -294,10 +294,6 @@ router.put('/', async (req, res) => {
           _id: { $in: getGroup._publisher },
         }).catch((er) => console.log(er));
 
-        for (let i = 0; i < aPub.length; i++) {
-          allNames.push(aPub[i].name);
-        }
-
         let updateDoc = await Group.findOneAndUpdate(
           { _id },
           {
@@ -316,15 +312,31 @@ router.put('/', async (req, res) => {
             freeGroup,
           },
           { new: true }
-        ).catch((err) => {
-          return res
-            .status(400)
-            .json(
-              response('SWR', 'Publisher update failed. Try again!', null, null)
-            );
-        });
+        )
+          .populate({
+            model: 'publisher',
+            path: '_publisher',
+          })
+          .catch((err) => {
+            return res
+              .status(400)
+              .json(
+                response(
+                  'SWR',
+                  'Publisher update failed. Try again!',
+                  null,
+                  null
+                )
+              );
+          });
         if (updateDoc) {
-          // console.log(updateDoc._publisher.length);
+          console.log(updateDoc._publisher);
+          for (let i = 0; i < updateDoc._publisher.length; i++) {
+            allNames.push(updateDoc._publisher[i].name);
+          }
+          console.log({ allNames });
+          updateDoc.pub_names = allNames;
+          await updateDoc.save();
           return res
             .status(200)
             .json(response('S', 'Successful', { group: updateDoc }, null));

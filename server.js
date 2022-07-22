@@ -77,3 +77,6 @@ initiateCRONJobs();
 module.exports = {
   io,
 };
+
+
+// Artists.findOne({}).then(r => console.log(r.name.forEach(i => console.log(i))))

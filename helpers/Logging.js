@@ -61,7 +61,8 @@ const generateLogsForTrack = async (
       let publisherUnMatchString = 'Publishers(';
       if (track.publisherUnMatch === false) {
         let allPubsOfTracks = Object.keys(getTrack.publishers);
-        allPubsOfTracks.forEach((item, idx) => {
+        console.log(getUserGroupDetails.pub_names, "---------ALLL")
+        allPubsOfTracks.forEach((item) => {
           if (!getUserGroupDetails.pub_names.includes(item)) {
             publisherUnMatchString += `${item}(${getTrack.publishers[item]}) `;
             isAnyPubMisMatch = true;
@@ -81,9 +82,9 @@ const generateLogsForTrack = async (
     let labelUnMatchString = 'Label(';
 
     if (userPreferences.filterByLicencedLabels && getTrack.label.length) {
-      console.log('IINN label ----- ', getTrack.label, {
-        result: getUserGroupDetails._labels.includes(getTrack.label),
-      });
+      // console.log('IINN label ----- ', getTrack.label, {
+      //   result: getUserGroupDetails._labels.includes(getTrack.label),
+      // });
       const exists = getUserGroupDetails._labels.includes(getTrack.label);
       if (!getTrack.label.length || !exists) {
         labelUnMatchString += `${getTrack.label}`;

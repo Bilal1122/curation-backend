@@ -55,12 +55,7 @@ const spotifyTracksProcessor = async (
   maintainUnavailable,
   finalTracks = []
 ) => {
-  console.log(
-    'stattsssss',
-    { userSideOffset },
-    { limit },
-    { finalTracks: finalTracks.length }
-  );
+
   let allTrackProcessed = [];
   let availableTracks = [];
   let processedCount = 0;
