@@ -1,0 +1,21 @@
+ISRC	Artist	Title
+#	MASN	Psycho!
+#	Russ	"Psycho, Pt. 2"
+#	Bernard Herrmann,Esa-Pekka Salonen,Los Angeles Philharmonic	Psycho: A Suite for Strings: The Murder
+#	The Damned	Psychomania
+#	St. Vincent	Psychopath
+TCAAY1144037	John Lydon	Psychopath
+#	Monty Python	Psychopath
+#	Insane Clown Posse	Psychopathic
+#	Slayer	Psychopathy Red
+NLA320886993	Slipknot	Psychosocial
+#	Slipknot	Psychosocial
+NLA320886993	Brooke Fraser	Psychosocial
+#	Brooke Fraser	Psychosocial
+#	PAUl brOWn	WInelIgHt
+#	Periphery	Psychosocial
+#	The Black Keys	Psychotic Girl
+ARA821800128	Sweet Little Band	Side to Side	
+USAM19190012	Bryan Adams	(Everything I Do) I Do It For You
+#	Bryan Adams	(Everything I Do) I Do It For You
+

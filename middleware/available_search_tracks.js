@@ -577,13 +577,14 @@ async function getTracksWithFiltersLogs(
         // label matching  && allAvailableTracks[i].label.length
         if (
           !isTrackNotAvailable &&
-          label_list.includes(allAvailableTracks[i].label)
+          label_list.includes(allAvailableTracks[i].label) &&
+          allAvailableTracks[i].label.length
         ) {
           console.log(allAvailableTracks[i].label);
           allAvailableTracks[i].labelMatch = true;
           allAvailableTracks[i].matchWithLocalTracks = true;
         } else {
-          if (!label_list.includes(allAvailableTracks[i].label)) {
+          if (!label_list.includes(allAvailableTracks[i].label) && allAvailableTracks[i].label.length) {
             allAvailableTracks[i].labelMatch = false;
             allAvailableTracks[i].matchWithLocalTracks = false;
             allAvailableTracks[i].logReason = [
@@ -840,6 +841,8 @@ async function getTracksWithoutFiltersLogs(
       if (filterPreferences.userLabelFilter) {
         // TODO: label matching
         // && data[i].label.length
+        console.log("above####", data[i].label)
+
         if (
           isTrackNotAvailable === false &&
           label_list.includes(data[i].label) &&
@@ -850,6 +853,7 @@ async function getTracksWithoutFiltersLogs(
           data[i].matchWithLocalTracks = true;
         } else {
           if (!label_list.includes(data[i].label) && data[i].label.length) {
+            console.log("####", data[i].label)
             data[i].labelMatch = false;
             data[i].matchWithLocalTracks = false;
             data[i].logReason = [
